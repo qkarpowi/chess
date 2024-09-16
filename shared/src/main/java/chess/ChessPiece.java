@@ -2,7 +2,13 @@ package chess;
 
 import chess.pieceCalculator.BishopCalculator;
 import chess.pieceCalculator.KingCalculator;
+import chess.pieceCalculator.KnightCalculator;
+import chess.pieceCalculator.PawnCalculator;
+import chess.pieceCalculator.RookCalculator;
+import chess.pieceCalculator.QueenCalculator;
+
 import chess.pieceCalculator.PieceMovesCalculator;
+
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -84,8 +90,15 @@ public class ChessPiece {
             calculator = new BishopCalculator();
         } else if(type == PieceType.KING){
             calculator = new KingCalculator();
-        }
-        else {
+        } else if(type == PieceType.KNIGHT){
+            calculator = new KnightCalculator();
+        } else if(type == PieceType.PAWN){
+            calculator = new PawnCalculator();
+        } else if(type == PieceType.QUEEN){
+            calculator = new QueenCalculator();
+        } else if(type == PieceType.ROOK){
+            calculator = new RookCalculator();
+        } else {
             return new HashSet<>();
         }
 
