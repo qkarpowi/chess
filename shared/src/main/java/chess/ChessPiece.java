@@ -1,6 +1,10 @@
 package chess;
 
+import chess.pieceCalculator.BishopCalculator;
+import chess.pieceCalculator.PieceMovesCalculator;
+
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -74,6 +78,13 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        PieceMovesCalculator calculator;
+        if(type == PieceType.BISHOP){
+            calculator = new BishopCalculator();
+        }else {
+            return new HashSet<ChessMove>();
+        }
+
+        return calculator.pieceMoves(board, myPosition);
     }
 }
