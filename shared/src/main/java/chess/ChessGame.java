@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -48,7 +49,28 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        //test if you are still in check after move
+        Collection<ChessMove> possibleMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+        Collection<ChessMove> validMoves = new HashSet<ChessMove>();
+        ChessPiece pieceToMove = this.board.getPiece(startPosition);
+        for (ChessMove move : possibleMoves) {
+
+            try {
+                ChessBoard boardCopy = (ChessBoard) this.board.clone();
+                if (move.getPromotionPiece() == null) {
+                    boardCopy.addPiece(move.getEndPosition(), pieceToMove);
+                } else {
+                    boardCopy.addPiece(move.getEndPosition(), new ChessPiece(this.getTeamTurn(), move.getPromotionPiece()));
+                }
+                boardCopy.removePiece(move.getStartPosition(), pieceToMove);
+                if (!internalIsInCheck(boardCopy, pieceToMove.getTeamColor())) {
+                    validMoves.add(move);
+                }
+            } catch (CloneNotSupportedException | InvalidMoveException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return validMoves;
     }
 
     /**
