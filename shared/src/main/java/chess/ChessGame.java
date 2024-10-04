@@ -80,7 +80,46 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
+        if (pieceToMove.getTeamColor() != this.getTeamTurn()){
+            throw new InvalidMoveException("It's not this teams turn");
+        }
+        Collection<ChessMove> validMoves = this.validMoves(move.getStartPosition());
+        if (!validMoves.contains(move)){
+            throw new InvalidMoveException("Move not valid for this piece");
+        }
+
+        //test if you are still in check after move
+        if(this.isInCheck(this.getTeamTurn())){
+            try{
+                ChessBoard boardCopy = (ChessBoard) this.board.clone();
+                if(move.getPromotionPiece() == null) {
+                    boardCopy.addPiece(move.getEndPosition(), pieceToMove);
+                } else {
+                    boardCopy.addPiece(move.getEndPosition(), new ChessPiece(this.getTeamTurn(), move.getPromotionPiece()));
+                }
+                boardCopy.removePiece(move.getStartPosition(), pieceToMove);
+                if (internalIsInCheck(boardCopy, this.getTeamTurn())) {
+                    throw new InvalidMoveException("After making move you are still in check");
+                }
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        if(move.getPromotionPiece() == null) {
+            this.board.addPiece(move.getEndPosition(), pieceToMove);
+        } else {
+            this.board.addPiece(move.getEndPosition(), new ChessPiece(this.getTeamTurn(), move.getPromotionPiece()));
+        }
+        this.board.removePiece(move.getStartPosition(), pieceToMove);
+
+        //Switch Team turns.
+        if(this.getTeamTurn() == TeamColor.WHITE){
+            this.setTeamTurn(TeamColor.BLACK);
+        } else {
+            this.setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
