@@ -173,7 +173,37 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!this.isInCheck(teamColor)){
+            return false;
+        }
+
+        //Test every move that color can make and if they are still in check after making those moves it is check mate.
+        for (int row = 1; row <= 8; row++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = this.board.getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> possibleMoves = piece.pieceMoves(this.board, position);
+                    for (ChessMove possibleMove : possibleMoves) {
+                        try{
+                            ChessBoard boardCopy = (ChessBoard) this.board.clone();
+                            if(possibleMove.getPromotionPiece() == null) {
+                                boardCopy.addPiece(possibleMove.getEndPosition(), piece);
+                            } else {
+                                boardCopy.addPiece(possibleMove.getEndPosition(), new ChessPiece(teamColor, possibleMove.getPromotionPiece()));
+                            }
+                            boardCopy.removePiece(possibleMove.getStartPosition(), piece);
+                            if (!internalIsInCheck(boardCopy, teamColor)) {
+                                return false;
+                            }
+                        } catch (CloneNotSupportedException | InvalidMoveException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
