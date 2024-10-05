@@ -14,6 +14,7 @@ public class ChessGame {
     private ChessBoard board;
     public ChessGame() {
         this.board = new ChessBoard();
+        this.board.resetBoard();
         this.TeamTurn = TeamColor.WHITE;
     }
 
@@ -81,6 +82,9 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
+        if (pieceToMove == null) {
+            throw new InvalidMoveException();
+        }
         if (pieceToMove.getTeamColor() != this.getTeamTurn()){
             throw new InvalidMoveException("It's not this teams turn");
         }
@@ -214,6 +218,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        if (this.isInCheckmate(teamColor)){
+            return false;
+        }
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPiece piece = this.board.getPiece(new ChessPosition(row, col));
