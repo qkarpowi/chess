@@ -25,7 +25,7 @@ public class GameService {
         return gameDAO.getAllGames();
     }
 
-    public GameData createGame(String username, String authtoken, String gameName) throws Exception {
+    public GameData createGame(String authtoken, String gameName) throws Exception {
         if(!authDAO.validateAuth(authtoken)){
             throw new Exception("Unauthorized access");
         }

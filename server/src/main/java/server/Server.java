@@ -10,6 +10,9 @@ import spark.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Server {
     private final UserService userService;
     private final DatabaseService databaseService;
@@ -80,24 +83,55 @@ public class Server {
     }
 
     private Object loginUser(Request req, Response res) throws ResponseException {
-        //TODO login user
-        res.status(200);
-        return "";
+        //TODO proper error handling
+        var user = new Gson().fromJson(req.body(), model.LoginData.class);
+
+        try{
+            AuthData authData = userService.login(user.username(), user.password());
+            res.status(200);
+            return new Gson().toJson(authData);
+        } catch (Exception e) {
+            res.status(500);
+            return "Error";
+        }
+
     }
     private Object logoutUser(Request req, Response res) throws ResponseException {
-        //TODO logout user
-        res.status(200);
-        return "";
+        //TODO proper error handling
+        var authtoken = req.headers("authorization");
+        try{
+            userService.logout(authtoken);
+            res.status(200);
+            return "";
+        } catch (Exception e) {
+            res.status(500);
+            return "Error";
+        }
     }
     private Object listGames(Request req, Response res) throws ResponseException {
-        //TODO list games
-        res.status(200);
-        return "";
+        //TODO proper error handling
+        var authtoken = req.headers("authorization");
+        try{
+            var games = gameService.getGames(authtoken);
+            res.status(200);
+            return new Gson().toJson(games);
+        } catch (Exception e) {
+            res.status(500);
+            return "Error";
+        }
     }
     private Object createGame(Request req, Response res) throws ResponseException {
-        //TODO create game
-        res.status(200);
-        return "";
+        //TODO proper error handling
+        var authtoken = req.headers("authorization");
+        var gameData = new Gson().fromJson(req.body(), model.GameData.class);
+        try{
+            var games = gameService.createGame(gameData.gameName(), authtoken);
+            res.status(200);
+            return new Gson().toJson(games);
+        } catch (Exception e) {
+            res.status(500);
+            return "Error";
+        }
     }
     private Object joinGame(Request req, Response res) throws ResponseException {
         //TODO join game
