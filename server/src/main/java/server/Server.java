@@ -1,10 +1,25 @@
 package server;
 
+import com.google.gson.JsonObject;
+import model.AuthData;
+import org.eclipse.jetty.server.Authentication;
+import service.DatabaseService;
+import service.GameService;
+import service.UserService;
 import spark.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
 public class Server {
+    private final UserService userService;
+    private final DatabaseService databaseService;
+    private final GameService gameService;
+
+    public Server(UserService userService, DatabaseService databaseService, GameService gameService) {
+        this.userService = userService;
+        this.databaseService = databaseService;
+        this.gameService = gameService;
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -38,15 +53,30 @@ public class Server {
     }
 
     private Object clearApplication(Request req, Response res) throws ResponseException {
-        //TODO Delete data
-        res.status(200);
-        return "";
+        //Delete data
+        try{
+            databaseService.clear();
+            res.status(200);
+            return "";
+        } catch (Exception e) {
+            res.status(500);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", e.getMessage());
+            return jsonObject.toString();
+        }
     }
 
     private Object registerUser(Request req, Response res) throws ResponseException {
-        //TODO register user
+        //TODO proper error handling
+        var user = new Gson().fromJson(req.body(), model.UserData.class);
+        AuthData authData;
+        try{
+            authData = userService.register(user);
+        } catch (Exception e) {
+            throw new ResponseException(400, "User already exists");
+        }
         res.status(200);
-        return "";
+        return new Gson().toJson(authData);
     }
     private Object loginUser(Request req, Response res) throws ResponseException {
         //TODO login user

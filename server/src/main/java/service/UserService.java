@@ -1,31 +1,39 @@
 package service;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import model.*;
 
 public class UserService {
     private UserDAO userDAO;
-    public UserService(UserDAO userDAO) {
+    private AuthDAO authDAO;
+    public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
+        this.authDAO = authDAO;
     }
-    public AuthData register(String username, String password, String email){
-        UserData data = new UserData(username, password, email);
+    public AuthData register(UserData userData) throws DataAccessException {
         try{
-            userDAO.getUser(username);
+            userDAO.getUser(userData.username());
         } catch (Exception e){
             return null;
         }
         try{
-            userDAO.createUser(data);
+            userDAO.createUser(userData);
         } catch (Exception e){
             return null;
         }
-
-
-        return new AuthData("", "");
+        AuthData authtoken = new AuthData("0000", userData.username());
+        try {
+            authtoken = authDAO.createAuth(authtoken);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return authtoken;
     }
 
     public AuthData login(UserData user) {
+
         return new AuthData("", "");
     }
 
