@@ -1,15 +1,14 @@
 package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import model.*;
 
 import java.util.UUID;
 
 public class UserService {
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
     public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
@@ -26,7 +25,7 @@ public class UserService {
         }
 
         try{
-            userDAO.createUser(userData);
+            user = userDAO.createUser(userData);
         } catch (Exception e){
             return null;
         }

@@ -2,16 +2,12 @@ package server;
 
 import com.google.gson.JsonObject;
 import model.AuthData;
-import org.eclipse.jetty.server.Authentication;
 import service.DatabaseService;
 import service.GameService;
 import service.UserService;
 import spark.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Server {
     private final UserService userService;
@@ -125,9 +121,9 @@ public class Server {
         var authtoken = req.headers("authorization");
         var gameData = new Gson().fromJson(req.body(), model.GameData.class);
         try{
-            var games = gameService.createGame(gameData.gameName(), authtoken);
+            var game = gameService.createGame(authtoken, gameData.gameName());
             res.status(200);
-            return new Gson().toJson(games);
+            return new Gson().toJson(game.gameID());
         } catch (Exception e) {
             res.status(500);
             return "Error";
@@ -138,5 +134,4 @@ public class Server {
         res.status(200);
         return "";
     }
-
 }

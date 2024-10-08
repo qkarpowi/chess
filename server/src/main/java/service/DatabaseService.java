@@ -6,9 +6,9 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
 public class DatabaseService {
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
-    private UserDAO userDAO;
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
+    private final UserDAO userDAO;
 
     public DatabaseService(AuthDAO authDAO, UserDAO userDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
