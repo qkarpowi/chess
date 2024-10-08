@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.Collection;
@@ -11,5 +12,7 @@ public interface GameDAO {
 
     GameData getGame(int id);
 
-    GameData createGame(GameData game);
+    GameData createGame(String whiteUsername, String blackUsername, String gameName, ChessGame game);
+
+    GameData updateGame(GameData gameData);
 }

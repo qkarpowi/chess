@@ -12,9 +12,13 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess server.Server: " + piece);
 
-        var userService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO());
-        var gameService = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
-        var databaseService = new DatabaseService(new MemoryAuthDAO(), new MemoryUserDAO(), new MemoryGameDAO());
+        var gameDAO = new MemoryGameDAO();
+        var authDAO = new MemoryAuthDAO();
+        var userDAO = new MemoryUserDAO();
+
+        var userService = new UserService(userDAO, authDAO);
+        var gameService = new GameService(authDAO, gameDAO);
+        var databaseService = new DatabaseService(authDAO, userDAO, gameDAO);
 
         var server = new Server(userService, databaseService, gameService);
         server.run(8080);

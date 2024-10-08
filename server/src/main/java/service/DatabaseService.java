@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 
@@ -15,14 +16,14 @@ public class DatabaseService {
         this.gameDAO = gameDAO;
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException {
         try{
             authDAO.clear();
             gameDAO.clear();
             userDAO.clear();
             throw new RuntimeException("Testing");
         } catch(Exception e){
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 }
