@@ -78,6 +78,7 @@ public class Server {
         res.status(200);
         return new Gson().toJson(authData);
     }
+
     private Object loginUser(Request req, Response res) throws ResponseException {
         //TODO login user
         res.status(200);

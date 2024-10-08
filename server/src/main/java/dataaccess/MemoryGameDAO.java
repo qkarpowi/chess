@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 import java.util.Collection;
 
@@ -25,8 +26,14 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData createGame(GameData game){
-        games.put(nextId++, game);
-        return game;
+    public GameData createGame(String whiteUsername, String blackUsername, String gameName, ChessGame game){
+        var gameData = new GameData(nextId++, whiteUsername, blackUsername, gameName, game);
+        games.put(gameData.gameID(), gameData);
+        return gameData;
+    }
+
+    public GameData updateGame(GameData gameData){
+        games.put(gameData.gameID(), gameData);
+        return gameData;
     }
 }

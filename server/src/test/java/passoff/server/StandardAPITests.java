@@ -1,9 +1,15 @@
 package passoff.server;
 
 import chess.ChessGame;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import server.Server;
+import service.DatabaseService;
+import service.GameService;
+import service.UserService;
 
 import java.net.HttpURLConnection;
 import java.util.Arrays;
@@ -32,7 +38,16 @@ public class StandardAPITests {
 
     @BeforeAll
     public static void init() {
-        server = new Server();
+        var gameDAO = new MemoryGameDAO();
+        var authDAO = new MemoryAuthDAO();
+        var userDAO = new MemoryUserDAO();
+
+        var userService = new UserService(userDAO, authDAO);
+        var gameService = new GameService(authDAO, gameDAO);
+        var databaseService = new DatabaseService(authDAO, userDAO, gameDAO);
+
+        server = new Server(userService, databaseService, gameService);
+
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
 

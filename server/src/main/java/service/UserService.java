@@ -5,6 +5,8 @@ import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import model.*;
 
+import java.util.UUID;
+
 public class UserService {
     private UserDAO userDAO;
     private AuthDAO authDAO;
@@ -13,17 +15,23 @@ public class UserService {
         this.authDAO = authDAO;
     }
     public AuthData register(UserData userData) throws DataAccessException {
+        UserData user;
         try{
-            userDAO.getUser(userData.username());
+            user = userDAO.getUser(userData.username());
         } catch (Exception e){
             return null;
         }
+        if(user != null){
+            throw new DataAccessException("Username already exists");
+        }
+
         try{
             userDAO.createUser(userData);
         } catch (Exception e){
             return null;
         }
-        AuthData authtoken = new AuthData("0000", userData.username());
+
+        AuthData authtoken = new AuthData(UUID.randomUUID().toString(), userData.username());
         try {
             authtoken = authDAO.createAuth(authtoken);
         } catch (DataAccessException e) {
@@ -32,12 +40,18 @@ public class UserService {
         return authtoken;
     }
 
-    public AuthData login(UserData user) {
-
-        return new AuthData("", "");
+    public AuthData login(String username, String password) throws Exception{
+        var userData = userDAO.getUser(username);
+        if(userData == null || !userData.password().equals(password)){
+            throw new DataAccessException("Invalid username or password");
+        }
+        return authDAO.createAuth(new AuthData(UUID.randomUUID().toString(), username));
     }
 
-    public void logout(UserData user) {
-
+    public void logout(String authtoken) throws Exception {
+        if(authDAO.getAuth(authtoken) == null){
+            throw new DataAccessException("Invalid authtoken");
+        }
+        authDAO.deleteAuth(authtoken);
     }
 }
