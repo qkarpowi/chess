@@ -1,13 +1,18 @@
 package server;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import model.AuthData;
+import model.GameData;
+import model.LoginData;
+import model.UserData;
 import service.DatabaseService;
 import service.GameService;
 import service.UserService;
 import spark.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import util.Result;
 
 public class Server {
     private final UserService userService;
@@ -53,55 +58,58 @@ public class Server {
 
     private Object clearApplication(Request req, Response res) throws ResponseException {
         //Delete data
-        try{
-            databaseService.clear();
+        var result = databaseService.clear();
+        if(result.isSuccess()){
             res.status(200);
             return "";
-        } catch (Exception e) {
-            res.status(500);
+        } else {
+            res.status(result.getStatuscode());
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", e.getMessage());
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
             return jsonObject.toString();
         }
     }
 
     private Object registerUser(Request req, Response res) throws ResponseException {
-        //TODO proper error handling
-        var user = new Gson().fromJson(req.body(), model.UserData.class);
-        AuthData authData;
-        try{
-            authData = userService.register(user);
-        } catch (Exception e) {
-            throw new ResponseException(400, "User already exists");
+        var user = new Gson().fromJson(req.body(), UserData.class);
+        var result = userService.register(user);
+
+        if(result.isSuccess()){
+            res.status(200);
+            return new Gson().toJson(result.getData());
+        } else {
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
         }
-        res.status(200);
-        return new Gson().toJson(authData);
     }
 
     private Object loginUser(Request req, Response res) throws ResponseException {
-        //TODO proper error handling
-        var user = new Gson().fromJson(req.body(), model.LoginData.class);
+        var user = new Gson().fromJson(req.body(), LoginData.class);
+        Result<AuthData> result = userService.login(user.username(), user.password());
 
-        try{
-            AuthData authData = userService.login(user.username(), user.password());
+        if(result.isSuccess()){
             res.status(200);
-            return new Gson().toJson(authData);
-        } catch (Exception e) {
-            res.status(500);
-            return "Error";
+            return new Gson().toJson(result.getData());
+        } else {
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
         }
-
     }
     private Object logoutUser(Request req, Response res) throws ResponseException {
-        //TODO proper error handling
         var authtoken = req.headers("authorization");
-        try{
-            userService.logout(authtoken);
+        var result = userService.logout(authtoken);
+        if(result.isSuccess()){
             res.status(200);
             return "";
-        } catch (Exception e) {
-            res.status(500);
-            return "Error";
+        } else{
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
         }
     }
     private Object listGames(Request req, Response res) throws ResponseException {
@@ -110,7 +118,10 @@ public class Server {
         try{
             var games = gameService.getGames(authtoken);
             res.status(200);
-            return new Gson().toJson(games);
+            var array = new JsonArray();
+            var json = new JsonObject();
+            json.add("games", array);
+            return json.toString();
         } catch (Exception e) {
             res.status(500);
             return "Error";
@@ -119,7 +130,7 @@ public class Server {
     private Object createGame(Request req, Response res) throws ResponseException {
         //TODO proper error handling
         var authtoken = req.headers("authorization");
-        var gameData = new Gson().fromJson(req.body(), model.GameData.class);
+        var gameData = new Gson().fromJson(req.body(), GameData.class);
         try{
             var game = gameService.createGame(authtoken, gameData.gameName());
             res.status(200);
@@ -131,6 +142,7 @@ public class Server {
     }
     private Object joinGame(Request req, Response res) throws ResponseException {
         //TODO join game
+
         res.status(200);
         return "";
     }
