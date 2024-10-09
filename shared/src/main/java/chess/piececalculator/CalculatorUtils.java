@@ -113,7 +113,8 @@ public class CalculatorUtils {
         }
     }
 
-    private static boolean checkSquare(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, int row, int col, HashSet<ChessMove> moves){
+    private static boolean checkSquare(ChessBoard board, ChessPosition position, ChessGame.TeamColor color,
+                                       int row, int col, HashSet<ChessMove> moves){
         ChessPosition checkPosition = new ChessPosition(row, col);
         if (board.getPiece(checkPosition) == null) {
             moves.add(new ChessMove(position, checkPosition, null));
