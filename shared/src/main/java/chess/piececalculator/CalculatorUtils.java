@@ -15,7 +15,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int i = row - 1, j = col - 1; i >= 1 && j >= 1; i--, j--) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, j, moves)){
+            if(checkSquare(board, position, color, i, j, moves)){
                 break;
             }
             count++;
@@ -29,7 +29,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int i = row - 1, j = col + 1; i >= 1 && j <= boardHeight; i--, j++)  {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, j, moves)){
+            if(checkSquare(board, position, color, i, j, moves)){
                 break;
             }
             count++;
@@ -44,7 +44,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int i = row + 1, j = col - 1; i <= boardWidth && j >= 1; i++, j--)   {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, j, moves)){
+            if(checkSquare(board, position, color, i, j, moves)){
                 break;
             }
             count++;
@@ -58,7 +58,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int i = row + 1, j = col + 1; i <= boardWidth && j <= boardHeight; i++, j++) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, j, moves)){
+            if(checkSquare(board, position, color, i, j, moves)){
                 break;
             }
             count++;
@@ -67,30 +67,22 @@ public class CalculatorUtils {
 
     public static void westMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, HashSet<ChessMove> moves, int limit){
         // Check right
-        int row = position.getRow();
         int col = position.getColumn();
-
-        int count = 0;
-        for (int j = col - 1; j > 0; j--) {
+        //int count = 0;
+        for (int j = col - 1, count = 0; j > 0; j--, count++) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, row, j, moves)){
+            if(checkSquare(board, position, color, position.getRow(), j, moves)){
                 break;
             }
-            count++;
         }
     }
     public static void southMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, HashSet<ChessMove> moves, int limit){
         // Check downward
-        int row = position.getRow();
-        int col = position.getColumn();
-
-        int count = 0;
-        for (int i = row + 1; i <= boardWidth; i++) {
+        for (int i = position.getRow() + 1, count = 0; i <= boardWidth; i++, count++) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, col, moves)){
+            if(checkSquare(board, position, color, i, position.getColumn(), moves)){
                 break;
             }
-            count++;
         }
     }
     public static void northMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor color, HashSet<ChessMove> moves, int limit){
@@ -101,7 +93,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int i = row - 1; i > 0; i--) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, i, col, moves)){
+            if(checkSquare(board, position, color, i, col, moves)){
                 break;
             }
             count++;
@@ -114,7 +106,7 @@ public class CalculatorUtils {
         int count = 0;
         for (int j = col + 1; j <= boardHeight; j++) {
             if(count == limit) { break; }
-            if(!checkSquare(board, position, color, row, j, moves)){
+            if(checkSquare(board, position, color, row, j, moves)){
                 break;
             }
             count++;
@@ -127,10 +119,10 @@ public class CalculatorUtils {
             moves.add(new ChessMove(position, checkPosition, null));
         } else if(board.getPiece(checkPosition).getTeamColor() != color){
             moves.add(new ChessMove(position, checkPosition, null));
-            return false; // Stop when encountering a piece
+            return true; // Stop when encountering a piece
         }else{
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }

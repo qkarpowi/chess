@@ -62,74 +62,32 @@ public class Server {
     private Object clearApplication(Request req, Response res) throws ResponseException {
         //Delete data
         var result = databaseService.clear();
-        if(result.isSuccess()){
-            res.status(200);
-            return "";
-        } else {
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
 
     private Object registerUser(Request req, Response res) throws ResponseException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         var result = userService.register(user);
-
-        if(result.isSuccess()){
-            res.status(200);
-            return new Gson().toJson(result.getData());
-        } else {
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
 
     private Object loginUser(Request req, Response res) throws ResponseException {
         var user = new Gson().fromJson(req.body(), LoginData.class);
         Result<AuthData> result = userService.login(user.username(), user.password());
-
-        if(result.isSuccess()){
-            res.status(200);
-            return new Gson().toJson(result.getData());
-        } else {
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
 
     private Object logoutUser(Request req, Response res) throws ResponseException {
         var authtoken = req.headers("authorization");
         var result = userService.logout(authtoken);
-        if(result.isSuccess()){
-            res.status(200);
-            return "";
-        } else{
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
 
     private Object listGames(Request req, Response res) throws ResponseException {
         var authtoken = req.headers("authorization");
 
         var result = gameService.getGames(authtoken);
-        if(result.isSuccess()){
-            res.status(200);
-            return new Gson().toJson(result.getData());
-        } else {
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
 
     private Object createGame(Request req, Response res) throws ResponseException {
@@ -137,24 +95,20 @@ public class Server {
         var gameData = new Gson().fromJson(req.body(), GameData.class);
 
         var result = gameService.createGame(authtoken, gameData.gameName());
-        if(result.isSuccess()){
-            res.status(200);
-            return new Gson().toJson(result.getData());
-        } else {
-            res.status(result.getStatuscode());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
-            return jsonObject.toString();
-        }
+        return handleResult(result, res);
     }
+
     private Object joinGame(Request req, Response res) throws ResponseException {
         var authtoken = req.headers("authorization");
         var joinGame = new Gson().fromJson(req.body(), JoinGame.class);
-
         var result = gameService.joinGame(authtoken, joinGame.playerColor(), joinGame.gameID());
+        return handleResult(result, res);
+    }
+
+    private static String handleResult(Result result, Response res) {
         if(result.isSuccess()){
             res.status(200);
-            return "";
+            return new Gson().toJson(result.getData());
         } else {
             res.status(result.getStatuscode());
             JsonObject jsonObject = new JsonObject();
