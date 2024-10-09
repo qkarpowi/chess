@@ -2,10 +2,7 @@ package server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import model.AuthData;
-import model.GameData;
-import model.LoginData;
-import model.UserData;
+import model.*;
 import service.DatabaseService;
 import service.GameService;
 import service.UserService;
@@ -130,22 +127,33 @@ public class Server {
     }
 
     private Object createGame(Request req, Response res) throws ResponseException {
-        //TODO proper error handling
         var authtoken = req.headers("authorization");
         var gameData = new Gson().fromJson(req.body(), GameData.class);
-        try{
-            var game = gameService.createGame(authtoken, gameData.gameName());
+
+        var result = gameService.createGame(authtoken, gameData.gameName());
+        if(result.isSuccess()){
             res.status(200);
-            return new Gson().toJson(game.gameID());
-        } catch (Exception e) {
-            res.status(500);
-            return "Error";
+            return new Gson().toJson(result.getData());
+        } else {
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
         }
     }
     private Object joinGame(Request req, Response res) throws ResponseException {
-        //TODO join game
+        var authtoken = req.headers("authorization");
+        var joinGame = new Gson().fromJson(req.body(), JoinGame.class);
 
-        res.status(200);
-        return "";
+        var result = gameService.joinGame(authtoken, joinGame.playerColor(), joinGame.gameID());
+        if(result.isSuccess()){
+            res.status(200);
+            return "";
+        } else {
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
+        }
     }
 }
