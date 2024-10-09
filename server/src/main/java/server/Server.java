@@ -2,6 +2,9 @@ package server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import model.*;
 import service.DatabaseService;
 import service.GameService;
@@ -16,10 +19,14 @@ public class Server {
     private final DatabaseService databaseService;
     private final GameService gameService;
 
-    public Server(UserService userService, DatabaseService databaseService, GameService gameService) {
-        this.userService = userService;
-        this.databaseService = databaseService;
-        this.gameService = gameService;
+    public Server() {
+        var gameDAO = new MemoryGameDAO();
+        var authDAO = new MemoryAuthDAO();
+        var userDAO = new MemoryUserDAO();
+
+        this.userService = new UserService(userDAO, authDAO);
+        this.gameService = new GameService(authDAO, gameDAO);
+        this.databaseService = new DatabaseService(authDAO, userDAO, gameDAO);
     }
 
     public int run(int desiredPort) {

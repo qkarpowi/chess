@@ -4,18 +4,6 @@ import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import passoff.server.TestServerFacade;
-import server.Server;
-import service.DatabaseService;
-import service.GameService;
-import service.UserService;
-
-import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {
