@@ -99,6 +99,7 @@ public class Server {
             return jsonObject.toString();
         }
     }
+
     private Object logoutUser(Request req, Response res) throws ResponseException {
         var authtoken = req.headers("authorization");
         var result = userService.logout(authtoken);
@@ -112,21 +113,22 @@ public class Server {
             return jsonObject.toString();
         }
     }
+
     private Object listGames(Request req, Response res) throws ResponseException {
-        //TODO proper error handling
         var authtoken = req.headers("authorization");
-        try{
-            var games = gameService.getGames(authtoken);
+
+        var result = gameService.getGames(authtoken);
+        if(result.isSuccess()){
             res.status(200);
-            var array = new JsonArray();
-            var json = new JsonObject();
-            json.add("games", array);
-            return json.toString();
-        } catch (Exception e) {
-            res.status(500);
-            return "Error";
+            return new Gson().toJson(result.getData());
+        } else {
+            res.status(result.getStatuscode());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("message", String.format("Error: %s", result.getMessage()));
+            return jsonObject.toString();
         }
     }
+
     private Object createGame(Request req, Response res) throws ResponseException {
         //TODO proper error handling
         var authtoken = req.headers("authorization");

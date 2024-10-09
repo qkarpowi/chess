@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import model.*;
+import util.Result;
 
 import java.util.Collection;
 
@@ -16,12 +17,24 @@ public class GameService {
         this.gameDAO = gameDAO;
     }
 
-    public Collection<GameData> getGames(String authtoken) throws Exception {
-        if(!authDAO.validateAuth(authtoken)){
-            throw new Exception("Unauthorized access");
+    public Result<GameList> getGames(String authtoken) {
+        boolean isValid;
+        try {
+            isValid = authDAO.validateAuth(authtoken);
+        } catch (Exception e) {
+            return new Result<GameList>(false, 500, e.getMessage(), null);
+        }
+        if(!isValid) {
+            return new Result<GameList>(false, 401, "unauthorized", null);
+        }
+        Collection<GameData> gameData;
+        try{
+            gameData = gameDAO.getAllGames();
+        } catch (Exception e) {
+            return new Result<GameList>(false, 500, e.getMessage(), null);
         }
 
-        return gameDAO.getAllGames();
+        return new Result<GameList>(true, 200, "success", new GameList(gameData));
     }
 
     public GameData createGame(String authtoken, String gameName) throws Exception {
