@@ -37,35 +37,89 @@ public class GameService {
         return new Result<GameList>(true, 200, "success", new GameList(gameData));
     }
 
-    public GameData createGame(String authtoken, String gameName) throws Exception {
-        if(!authDAO.validateAuth(authtoken)){
-            throw new Exception("Unauthorized access");
+    public Result<GameID> createGame(String authtoken, String gameName) {
+        //Validate user
+        boolean isValid;
+        try {
+            isValid = authDAO.validateAuth(authtoken);
+        } catch (Exception e) {
+            return new Result<GameID>(false, 500, e.getMessage(), null);
+        }
+        if(!isValid) {
+            return new Result<GameID>(false, 401, "unauthorized", null);
         }
 
-        return gameDAO.createGame(null, null, gameName, new ChessGame());
+        //validate game data
+        if(gameName == null || gameName.isEmpty()) {
+            return new Result<GameID>(false, 400, "bad request", null);
+        }
+
+        //create game
+        GameData gameData;
+        try {
+            gameData = gameDAO.createGame(null, null, gameName, new ChessGame());
+        } catch (Exception e) {
+            return new Result<GameID>(false, 500, e.getMessage(), null);
+        }
+
+        //Success
+        return new Result<GameID>(true, 200, "success", new GameID(gameData.gameID()));
     }
 
-    public void joinGame(String authtoken, ChessGame.TeamColor teamColor, Integer gameId) throws Exception {
-        if(!authDAO.validateAuth(authtoken)){
-            throw new Exception("Unauthorized access");
+    public Result joinGame(String authtoken, ChessGame.TeamColor teamColor, Integer gameId) {
+        //Validate user
+        boolean isValid;
+        try {
+            isValid = authDAO.validateAuth(authtoken);
+        } catch (Exception e) {
+            return new Result<>(false, 500, e.getMessage(), null);
+        }
+        if(!isValid) {
+            return new Result<>(false, 401, "unauthorized", null);
         }
 
-        String username = authDAO.getAuth(authtoken).username();
+        //validate request data
+        if(gameId == null || gameId < 0 || teamColor == null){
+            return new Result<>(false, 400, "bad request", null);
+        }
 
-        var gameData = gameDAO.getGame(gameId);
+        //get username
+        String username;
+        try {
+            username = authDAO.getAuth(authtoken).username();
+        } catch (Exception e) {
+            return new Result<>(false, 500, e.getMessage(), null);
+        }
+        if(username == null || username.isEmpty()) {
+            return new Result<>(false, 400, "bad request", null);
+        }
 
+        //get game
+        GameData gameData;
+        try{
+            gameData = gameDAO.getGame(gameId);
+        } catch (Exception e) {
+            return new Result<>(false, 500, e.getMessage(), null);
+        }
+        if(gameData == null) {
+            return new Result<>(false, 400, "bad request", null);
+        }
+
+        //validate team not taken
         if (teamColor == ChessGame.TeamColor.BLACK) {
             if(gameData.blackUsername() != null){
-                throw new Exception("already taken");
+                return new Result<>(false, 403, "already taken", null);
             }
             gameData  = new GameData(gameData.gameID(), gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
             gameDAO.updateGame(gameData);
+            return new Result<>(true, 200, "success", null);
         } else {
             if(gameData.whiteUsername() != null){
-                throw new Exception("already taken");
+                return new Result<>(false, 403, "already taken", null);
             }
             gameData  = new GameData(gameData.gameID(), username, gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(gameData);
+            return new Result<>(true, 200, "success", null);
         }
     }
 }
