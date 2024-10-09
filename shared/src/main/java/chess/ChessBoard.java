@@ -25,7 +25,8 @@ public class ChessBoard implements Cloneable {
     }
 
     public void removePiece(ChessPosition position, ChessPiece piece)throws InvalidMoveException {
-        if (squares[position.getRow() - 1][position.getColumn() - 1].getPieceType() == piece.getPieceType() && squares[position.getRow() - 1][position.getColumn() - 1].getTeamColor() == piece.getTeamColor()) {
+        if (squares[position.getRow() - 1][position.getColumn() - 1].getPieceType() == piece.getPieceType()
+                && squares[position.getRow() - 1][position.getColumn() - 1].getTeamColor() == piece.getTeamColor()) {
             squares[position.getRow() - 1][position.getColumn() - 1] = null;
         } else {
             throw new InvalidMoveException("The piece trying to be removed does not exist.");
@@ -35,8 +36,8 @@ public class ChessBoard implements Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(squares, that.squares);
     }

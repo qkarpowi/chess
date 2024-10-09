@@ -21,7 +21,7 @@ public class PawnCalculator implements PieceMovesCalculator{
             }
             int count = 0;
             for (int i = row - 1; i > 0; i--) {
-                if(count == limit) break;
+                if(count == limit) { break; }
                 ChessPosition checkPosition = new ChessPosition(i, col);
                 if (board.getPiece(checkPosition) == null) {
                     if(i == 1){
@@ -75,7 +75,7 @@ public class PawnCalculator implements PieceMovesCalculator{
             }
             int count = 0;
             for (int i = row + 1; i <= 8; i++) {
-                if(count == limit) break;
+                if(count == limit) { break; }
                 ChessPosition checkPosition = new ChessPosition(i, col);
                 if (board.getPiece(checkPosition) == null) {
                     if(i == 8){
