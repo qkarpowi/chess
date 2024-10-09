@@ -1,13 +1,13 @@
 package chess;
 
-import chess.pieceCalculator.BishopCalculator;
-import chess.pieceCalculator.KingCalculator;
-import chess.pieceCalculator.KnightCalculator;
-import chess.pieceCalculator.PawnCalculator;
-import chess.pieceCalculator.RookCalculator;
-import chess.pieceCalculator.QueenCalculator;
+import chess.piececalculator.BishopCalculator;
+import chess.piececalculator.KingCalculator;
+import chess.piececalculator.KnightCalculator;
+import chess.piececalculator.PawnCalculator;
+import chess.piececalculator.RookCalculator;
+import chess.piececalculator.QueenCalculator;
 
-import chess.pieceCalculator.PieceMovesCalculator;
+import chess.piececalculator.PieceMovesCalculator;
 
 
 import java.util.Collection;

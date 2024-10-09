@@ -10,19 +10,19 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor TeamTurn;
+    private TeamColor teamTurn;
     private ChessBoard board;
     public ChessGame() {
         this.board = new ChessBoard();
         this.board.resetBoard();
-        this.TeamTurn = TeamColor.WHITE;
+        this.teamTurn= TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return this.TeamTurn;
+        return this.teamTurn;
     }
 
     /**
@@ -31,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        this.TeamTurn = team;
+        this.teamTurn= team;
     }
 
     /**

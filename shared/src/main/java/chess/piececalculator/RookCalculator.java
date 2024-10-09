@@ -1,4 +1,4 @@
-package chess.pieceCalculator;
+package chess.piececalculator;
 
 import chess.ChessBoard;
 import chess.ChessGame;
@@ -14,16 +14,16 @@ public class RookCalculator implements PieceMovesCalculator{
 
         HashSet<ChessMove> validMoves = new HashSet<>();
         // Check Up direction
-        CalculatorUtils.NorthMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.northMoves(board, position, color, validMoves, 8);
 
         // Check Down direction
-        CalculatorUtils.SouthMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.southMoves(board, position, color, validMoves, 8);
 
         // Check left direction
-        CalculatorUtils.WestMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.westMoves(board, position, color, validMoves, 8);
 
         // Check right direction
-        CalculatorUtils.EastMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.eastMoves(board, position, color, validMoves, 8);
 
         return validMoves;
     }

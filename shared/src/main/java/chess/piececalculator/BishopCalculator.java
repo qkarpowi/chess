@@ -1,7 +1,6 @@
-package chess.pieceCalculator;
+package chess.piececalculator;
 
 import chess.*;
-import chess.pieceCalculator.PieceMovesCalculator;
 
 import java.util.*;
 
@@ -13,16 +12,16 @@ public class BishopCalculator implements PieceMovesCalculator {
 
 
         // Check upper-left diagonal
-        CalculatorUtils.NorthWestMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.northWestMoves(board, position, color, validMoves, 8);
 
         // Check upper-right diagonal
-        CalculatorUtils.NorthEastMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.northEastMoves(board, position, color, validMoves, 8);
 
         // Check lower-left diagonal
-        CalculatorUtils.SouthWestMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.southWestMoves(board, position, color, validMoves, 8);
 
         // Check lower-right diagonal
-        CalculatorUtils.SouthEastMoves(board, position, color, validMoves, 8);
+        CalculatorUtils.southEastMoves(board, position, color, validMoves, 8);
 
         return validMoves;
     }

@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
@@ -57,7 +56,7 @@ public class Server {
     }
 
     private void exceptionHandler(ResponseException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.getStatusCode());
     }
 
     private Object clearApplication(Request req, Response res) throws ResponseException {

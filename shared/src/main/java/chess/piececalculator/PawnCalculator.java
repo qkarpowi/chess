@@ -1,4 +1,4 @@
-package chess.pieceCalculator;
+package chess.piececalculator;
 
 import chess.*;
 
@@ -37,7 +37,6 @@ public class PawnCalculator implements PieceMovesCalculator{
                 }
                 count++;
             }
-
             //Check left diagonal
             if(col > 1) {
                 ChessPosition left = new ChessPosition(row -1, col -1);
