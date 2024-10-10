@@ -111,15 +111,18 @@ public class GameService {
                 return new Result<>(false, 403, "already taken", null);
             }
             gameData  = new GameData(gameData.gameID(), gameData.whiteUsername(), username, gameData.gameName(), gameData.game());
-            gameDAO.updateGame(gameData);
-            return new Result<>(true, 200, "success", null);
         } else {
             if(gameData.whiteUsername() != null){
                 return new Result<>(false, 403, "already taken", null);
             }
             gameData  = new GameData(gameData.gameID(), username, gameData.blackUsername(), gameData.gameName(), gameData.game());
+        }
+
+        try {
             gameDAO.updateGame(gameData);
             return new Result<>(true, 200, "success", null);
+        } catch (Exception e) {
+            return new Result<>(false, 500, e.getMessage(), null);
         }
     }
 }
