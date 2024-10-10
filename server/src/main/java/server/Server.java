@@ -18,12 +18,14 @@ public class Server {
 
     public Server() {
 
-        var gameDAO = new MemoryGameDAO();
-        var authDAO = new MemoryAuthDAO();
-
+        GameDAO gameDAO;
         UserDAO userDAO;
+        AuthDAO authDAO;
+
         try {
             userDAO = new MySqlUserDAO();
+            authDAO = new MySqlAuthDAO();
+            gameDAO = new MySqlGameDAO();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
