@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.sql.SQLException;
 
@@ -72,9 +71,7 @@ public class MySqlAuthDAO implements AuthDAO {
             CREATE TABLE IF NOT EXISTS `Authentication` (
                  `Authtoken` varchar(100) NOT NULL,
                  `Username` varchar(100) DEFAULT NULL,
-                 PRIMARY KEY (`Authentoken`),
-                 KEY `fk_Authentication_1_idx` (`Username`),
-                 CONSTRAINT `fk_Authentication_1` FOREIGN KEY (`Username`) REFERENCES `User` (`Username`)
+                 PRIMARY KEY (`Authtoken`)
                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

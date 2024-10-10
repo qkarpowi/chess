@@ -3,6 +3,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 import util.*;
 
 import java.util.UUID;
@@ -31,9 +32,11 @@ public class UserService {
             return new Result<AuthData>(false, 403, "already taken", null);
         }
 
+        String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+
         //create User
         try{
-            user = userDAO.createUser(userData);
+            userDAO.createUser(new UserData(userData.username(), hashedPassword, userData.email()));
         } catch (Exception e){
             return new Result<AuthData>(false, 500, e.getMessage(), null);
         }
@@ -63,8 +66,9 @@ public class UserService {
         } catch (Exception e){
             return new Result<AuthData>(false, 500, e.getMessage(), null);
         }
+
         //check that password matches
-        if( user == null || !user.password().equals(password)){
+        if( user == null || !BCrypt.checkpw(password, user.password())){
             return new Result<AuthData>(false, 401, "unauthorized", null);
         }
 

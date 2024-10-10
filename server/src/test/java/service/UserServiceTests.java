@@ -1,19 +1,7 @@
 package service;
-import chess.ChessGame;
 import dataaccess.*;
 import model.UserData;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import server.Server;
-import service.DatabaseService;
-import service.GameService;
-import service.UserService;
-
-import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTests {
@@ -27,7 +15,7 @@ public class UserServiceTests {
         authDao = new MemoryAuthDAO();
         userDao = new MemoryUserDAO();
         userService = new UserService(userDao, authDao);
-        userData = new UserData("username", "password", "email");
+        userData = new UserData("username1", "password1", "email");
     }
 
     @Test
@@ -39,7 +27,7 @@ public class UserServiceTests {
         Assertions.assertTrue(result.isSuccess());
 
         var retrievedUserData = userDao.getUser(userData.username());
-        Assertions.assertEquals(userData, retrievedUserData);
+        Assertions.assertEquals(userData.username(), retrievedUserData.username());
     }
 
     @Test

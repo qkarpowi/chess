@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
 public class MySqlGameDAO implements GameDAO {
     public MySqlGameDAO() throws DataAccessException {
         configureDatabase();
@@ -68,14 +71,21 @@ public class MySqlGameDAO implements GameDAO {
     public GameData createGame(String whiteUsername, String blackUsername, String gameName, ChessGame game) throws DataAccessException {
         try (var conn=DatabaseManager.getConnection()) {
             try (var preparedStatement=conn.prepareStatement(
-                    "INSERT INTO Game (WhiteUsername, BlackUsername, GameName, Game) VALUES(?, ?, ?, ?)")) {
+                    "INSERT INTO Game (WhiteUsername, BlackUsername, GameName, Game) VALUES(?, ?, ?, ?)",
+                    RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, whiteUsername);
                 preparedStatement.setString(2, blackUsername);
                 preparedStatement.setString(3, gameName);
                 var json = new Gson().toJson(game);
                 preparedStatement.setString(4, json);
 
-                var id = preparedStatement.executeUpdate();
+                preparedStatement.executeUpdate();
+
+                var resultSet = preparedStatement.getGeneratedKeys();
+                var id = 0;
+                if (resultSet.next()) {
+                    id = resultSet.getInt(1);
+                }
                 return new GameData(id, whiteUsername, blackUsername, gameName, game);
             }
         } catch (SQLException e) {
@@ -109,11 +119,7 @@ public class MySqlGameDAO implements GameDAO {
                  `BlackUsername` varchar(100) DEFAULT NULL,
                  `GameName` varchar(100) DEFAULT NULL,
                  `Game` json DEFAULT NULL,
-                 PRIMARY KEY (`GameID`),
-                 KEY `fk_whiteusername_idx` (`WhiteUsername`),
-                 KEY `fk_blackusername_idx` (`BlackUsername`),
-                 CONSTRAINT `fk_whiteusername` FOREIGN KEY (`WhiteUsername`) REFERENCES `User` (`Username`),
-                 CONSTRAINT `fk_blackusername` FOREIGN KEY (`BlackUsername`) REFERENCES `User` (`Username`)
+                 PRIMARY KEY (`GameID`)
                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
