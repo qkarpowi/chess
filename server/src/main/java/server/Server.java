@@ -1,9 +1,7 @@
 package server;
 
 import com.google.gson.JsonObject;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.*;
 import service.DatabaseService;
 import service.GameService;
@@ -19,9 +17,16 @@ public class Server {
     private final GameService gameService;
 
     public Server() {
+
         var gameDAO = new MemoryGameDAO();
         var authDAO = new MemoryAuthDAO();
-        var userDAO = new MemoryUserDAO();
+
+        UserDAO userDAO;
+        try {
+            userDAO = new MySqlUserDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         this.userService = new UserService(userDAO, authDAO);
         this.gameService = new GameService(authDAO, gameDAO);
