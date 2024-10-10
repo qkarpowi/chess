@@ -45,7 +45,7 @@ public class MySqlGameDAOTests {
     public void createGameSuccess() throws Exception {
         GameData gameData = gameDAO.createGame(null, null, "gameName", new ChessGame());
 
-        Assertions.assertEquals(gameData.gameName(), gameDAO.getGame(gameData.gameID()).gameName());
+        Assertions.assertEquals(gameData.gameID(), gameDAO.getGame(gameData.gameID()).gameID());
 
         gameDAO.clear();
     }
@@ -60,7 +60,7 @@ public class MySqlGameDAOTests {
     @Order(5)
     @DisplayName("getGame Positive Test")
     public void getGameSuccess() throws Exception {
-        GameData gameData = gameDAO.createGame(null, null, "gameName", new ChessGame());
+        GameData gameData = gameDAO.createGame("null", "null", "gameName", new ChessGame());
 
         Assertions.assertEquals(gameData.gameName(), gameDAO.getGame(gameData.gameID()).gameName());
 

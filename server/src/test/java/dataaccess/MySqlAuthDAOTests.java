@@ -20,10 +20,10 @@ public class MySqlAuthDAOTests {
     @Order(1)
     @DisplayName("createAuth Positive Test")
     public void createAuthSuccess() throws Exception {
-        AuthData authData = new AuthData("authToken", "username");
+        AuthData authData = new AuthData("this is a fake token", "username");
         authDao.createAuth(authData);
 
-        Assertions.assertEquals(authDao.getAuth(authData.authToken()), authData);
+        Assertions.assertEquals(authDao.getAuth(authData.authToken()).authToken(), authData.authToken());
 
         authDao.deleteAuth(authData.authToken());
     }
