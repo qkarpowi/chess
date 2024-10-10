@@ -7,7 +7,7 @@ import java.sql.*;
 
 
 public class MySqlUserDAO implements UserDAO {
-    public MySqlUserDAO() throws ResponseException, DataAccessException {
+    public MySqlUserDAO() throws DataAccessException {
         configureDatabase();
     }
 
@@ -53,8 +53,6 @@ public class MySqlUserDAO implements UserDAO {
         return null;
     }
 
-
-
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS `User` (
@@ -66,7 +64,7 @@ public class MySqlUserDAO implements UserDAO {
             """
     };
 
-    private void configureDatabase() throws ResponseException, DataAccessException {
+    private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -75,7 +73,7 @@ public class MySqlUserDAO implements UserDAO {
                 }
             }
         } catch (SQLException | DataAccessException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 }
