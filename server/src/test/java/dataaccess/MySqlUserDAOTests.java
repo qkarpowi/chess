@@ -18,7 +18,7 @@ public class MySqlUserDAOTests {
     @Order(1)
     @DisplayName("createUser Positive Test")
     public void createUserSuccess() throws Exception {
-        UserData userData = new UserData("username2", "pasword2", "email");
+        UserData userData = new UserData("username3", "pasword3", "email3");
         userDAO.createUser(userData);
 
         Assertions.assertEquals(userDAO.getUser(userData.username()), userData);

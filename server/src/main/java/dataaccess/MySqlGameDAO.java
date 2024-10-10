@@ -13,7 +13,7 @@ import static java.sql.Types.NULL;
 
 public class MySqlGameDAO implements GameDAO {
     public MySqlGameDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatements);
     }
 
     public void clear() throws DataAccessException {
@@ -117,23 +117,10 @@ public class MySqlGameDAO implements GameDAO {
                  `GameID` int NOT NULL AUTO_INCREMENT,
                  `WhiteUsername` varchar(100) DEFAULT NULL,
                  `BlackUsername` varchar(100) DEFAULT NULL,
-                 `GameName` varchar(100) DEFAULT NULL,
-                 `Game` json DEFAULT NULL,
+                 `GameName` varchar(100) NOT NULL,
+                 `Game` json NOT NULL,
                  PRIMARY KEY (`GameID`)
                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn=DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement=conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

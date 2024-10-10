@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDAO {
     public MySqlAuthDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatements);
     }
 
     public void clear() throws DataAccessException {
@@ -78,17 +78,4 @@ public class MySqlAuthDAO implements AuthDAO {
                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn=DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement=conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException | DataAccessException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }
