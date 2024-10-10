@@ -34,6 +34,9 @@ public class MySqlAuthDAO implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
+        if(authToken==null){
+            throw new DataAccessException("authToken is null");
+        }
         try (var conn=DatabaseManager.getConnection()) {
             try (var preparedStatement=conn.prepareStatement("DELETE FROM Authentication WHERE Authtoken=?")) {
                 preparedStatement.setString(1, authToken);
