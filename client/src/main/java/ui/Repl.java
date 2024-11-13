@@ -12,8 +12,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("♕ Welcome to Chess. Sign in to start. ♕");
-        System.out.print(client.help());
+        System.out.println("♕ Welcome to Chess. Type help to get started. ♕");
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -33,7 +32,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + "Chess>>> ");
+        System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "Chess>>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }

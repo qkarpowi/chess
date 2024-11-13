@@ -4,6 +4,8 @@ import server.ServerFacade;
 
 import java.util.Arrays;
 
+import static ui.EscapeSequences.*;
+
 public class LoginClient {
     private final ServerFacade server;
     private final String serverUrl;
@@ -38,9 +40,10 @@ public class LoginClient {
     }
 
     public String help() {
-            return """
-                    - signIn <yourname>
-                    - quit
+            return SET_TEXT_COLOR_BLUE + """
+                    login <username> <password> - to play chess
+                    register <username> <password> <email> - to create an account
+                    quit - playing chess
                     """;
 
     }
