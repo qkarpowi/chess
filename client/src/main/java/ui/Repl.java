@@ -1,14 +1,21 @@
 package ui;
 
+import clients.ConsoleClient;
+import clients.LoginClient;
+import model.AuthData;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 public class Repl {
-    private final LoginClient client;
+    private final ConsoleClient client;
+    private ClientState clientState;
+    private AuthData authData;
 
     public Repl(String serverUrl) {
         client = new LoginClient(serverUrl);
+        clientState = ClientState.LoggedOut;
     }
 
     public void run() {
@@ -27,12 +34,25 @@ public class Repl {
                 var msg = e.toString();
                 System.out.print(msg);
             }
+            if(clientState == ClientState.LoggedOut && client.getAuthData() != null) {
+                clientState = ClientState.LoggedIn;
+            }
         }
         System.out.println();
     }
 
     private void printPrompt() {
-        System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "Chess>>> " + SET_TEXT_COLOR_GREEN);
+        switch (clientState) {
+            case LoggedOut:
+                System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "[LOGGED_OUT]>>> " + SET_TEXT_COLOR_GREEN);
+                break;
+            case LoggedIn:
+                System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + client.getAuthData().username() + ">>> " + SET_TEXT_COLOR_GREEN);
+                break;
+            case InGame:
+                System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + client.getAuthData().username() + " Chess>>> " + SET_TEXT_COLOR_GREEN);
+        }
+
     }
 
 }
