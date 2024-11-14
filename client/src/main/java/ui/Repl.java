@@ -2,6 +2,7 @@ package ui;
 
 import clients.ConsoleClient;
 import clients.LoginClient;
+import clients.PreGameClient;
 import model.AuthData;
 
 import java.util.Scanner;
@@ -9,11 +10,12 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl {
-    private final ConsoleClient client;
+    private final String serverUrl;
+    private ConsoleClient client;
     private ClientState clientState;
-    private AuthData authData;
 
     public Repl(String serverUrl) {
+        this.serverUrl = serverUrl;
         client = new LoginClient(serverUrl);
         clientState = ClientState.LoggedOut;
     }
@@ -36,6 +38,11 @@ public class Repl {
             }
             if(clientState == ClientState.LoggedOut && client.getAuthData() != null) {
                 clientState = ClientState.LoggedIn;
+                client = new PreGameClient(serverUrl, client.getAuthData());
+            }
+            if(clientState == ClientState.LoggedIn && client.getAuthData() == null) {
+                clientState = ClientState.LoggedOut;
+                client = new LoginClient(serverUrl);
             }
         }
         System.out.println();

@@ -14,15 +14,22 @@ public class LoginClient implements ConsoleClient {
     private final ServerFacade server;
     private final String serverUrl;
     private AuthData authData = null;
+    private int gameID;
 
     public LoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        gameID = 0;
     }
 
     @Override
     public AuthData getAuthData() {
         return authData;
+    }
+
+    @Override
+    public int getGameID() {
+        return gameID;
     }
 
     @Override
