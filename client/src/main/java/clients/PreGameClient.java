@@ -55,13 +55,13 @@ public class PreGameClient implements ConsoleClient{
     }
     private String createGame(String... params) throws ResponseException {
         if(params.length == 1){
-            server.createGame(new GameCreate(params[0]));
+            server.createGame(new GameCreate(params[0]), authData);
             return "Game " + params[0] + " created successfully";
         }
         throw new ResponseException(400, "Expected: <name>");
     }
     private String listGames() throws ResponseException {
-        var gameData = server.listGames().games();
+        var gameData = server.listGames(authData).games();
         StringBuilder output = new StringBuilder();
         if(gameData.isEmpty()) {
             output.append("No games currently");
@@ -81,14 +81,14 @@ public class PreGameClient implements ConsoleClient{
     private String joinGame(String... params) throws ResponseException {
         if(params.length == 2){
             int gameIdToJoin = Integer.parseInt(params[0]) - 1;
-            var gameData = server.listGames().games().toArray(new GameData[0]);
+            var gameData = server.listGames(authData).games().toArray(new GameData[0]);
             gameIdToJoin = gameData[gameIdToJoin].gameID();
             if(Objects.equals(params[1].toLowerCase(), "white")){
-                server.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameIdToJoin));
+                server.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
                 return "Game " + gameIdToJoin + " joined successfully";
             } else if (Objects.equals(params[1].toLowerCase(), "black")){
-                server.joinGame(new JoinGame(ChessGame.TeamColor.BLACK, gameIdToJoin));
+                server.joinGame(new JoinGame(ChessGame.TeamColor.BLACK, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
                 return "Game " + gameIdToJoin + " joined successfully";
             }
@@ -99,7 +99,7 @@ public class PreGameClient implements ConsoleClient{
         return "";
     }
     private String logout() throws ResponseException {
-        server.logout();
+        server.logout(authData);
         authData = null;
         return "You have logged out successfully";
     }
