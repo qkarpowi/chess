@@ -10,13 +10,11 @@ import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 
 public class PreGameClient implements ConsoleClient{
     private final ServerFacade server;
-    private final String serverUrl;
     private int gameID;
     private AuthData authData;
 
-    public PreGameClient(String serverUrl, AuthData authData) {
-        server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    public PreGameClient(ServerFacade facade, AuthData authData) {
+        server = facade;
         this.authData = authData;
         gameID = 0;
     }
@@ -54,7 +52,8 @@ public class PreGameClient implements ConsoleClient{
         return "";
     }
     private String listGames() throws ResponseException {
-        return "";
+        var gameData = server.listGames();
+        return gameData.toString();
     }
     private String joinGame(String... params) throws ResponseException {
         return "";
@@ -77,7 +76,6 @@ public class PreGameClient implements ConsoleClient{
                     observe <ID> - a game
                     logout - when you are done
                     quit - playing chess
-                    help - with possible commands
-                    """;
+                    help - with possible commands""";
     }
 }

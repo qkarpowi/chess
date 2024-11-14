@@ -12,13 +12,11 @@ import static ui.EscapeSequences.*;
 
 public class LoginClient implements ConsoleClient {
     private final ServerFacade server;
-    private final String serverUrl;
     private AuthData authData = null;
     private int gameID;
 
-    public LoginClient(String serverUrl) {
-        server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
+    public LoginClient(ServerFacade facade) {
+        server = facade;
         gameID = 0;
     }
 
@@ -73,7 +71,6 @@ public class LoginClient implements ConsoleClient {
                     login <username> <password> - to play chess
                     register <username> <password> <email> - to create an account
                     quit - playing chess
-                    help - with possible commands
-                    """;
+                    help - with possible commands""";
     }
 }

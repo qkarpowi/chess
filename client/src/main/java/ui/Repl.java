@@ -4,6 +4,7 @@ import clients.ConsoleClient;
 import clients.LoginClient;
 import clients.PreGameClient;
 import model.AuthData;
+import server.ServerFacade;
 
 import java.util.Scanner;
 
@@ -13,16 +14,17 @@ public class Repl {
     private final String serverUrl;
     private ConsoleClient client;
     private ClientState clientState;
+    private final ServerFacade facade;
 
     public Repl(String serverUrl) {
         this.serverUrl = serverUrl;
-        client = new LoginClient(serverUrl);
+        facade = new ServerFacade(serverUrl);
+        client = new LoginClient(facade);
         clientState = ClientState.LoggedOut;
     }
 
     public void run() {
-        System.out.println("♕ Welcome to Chess. Type help to get started. ♕");
-
+        System.out.print("♕ Welcome to Chess. Type help to get started. ♕");
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -38,11 +40,11 @@ public class Repl {
             }
             if(clientState == ClientState.LoggedOut && client.getAuthData() != null) {
                 clientState = ClientState.LoggedIn;
-                client = new PreGameClient(serverUrl, client.getAuthData());
+                client = new PreGameClient(facade, client.getAuthData());
             }
             if(clientState == ClientState.LoggedIn && client.getAuthData() == null) {
                 clientState = ClientState.LoggedOut;
-                client = new LoginClient(serverUrl);
+                client = new LoginClient(this.facade);
             }
         }
         System.out.println();
