@@ -1,7 +1,6 @@
 package client;
 
 import chess.ChessGame;
-import exception.ResponseException;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -31,7 +30,7 @@ public class ServerFacadeTests {
         UserData user = new UserData("username123456", "password", "email@email.com");
         ServerFacade facade = new ServerFacade("http://localhost:8082");
 
-        var authData = facade.Register(user);
+        var authData = facade.register(user);
         Assertions.assertEquals(authData.username(), user.username());
     }
 
@@ -41,7 +40,7 @@ public class ServerFacadeTests {
         ServerFacade facade = new ServerFacade("http://localhost:8082");
 
         Assertions.assertThrows(Exception.class, () -> {
-            facade.Register(user);
+            facade.register(user);
         });
     }
 
@@ -52,7 +51,7 @@ public class ServerFacadeTests {
         String password = "passwordLogin";
 
         UserData userData = new UserData(username, password, "email@email.com");
-        var authdata = facade.Register(userData);
+        var authdata = facade.register(userData);
         facade.logout(authdata);
         var authData = facade.login(new LoginData(username, password));
         Assertions.assertEquals(authData.username(), username);
@@ -74,7 +73,7 @@ public class ServerFacadeTests {
         String password = "passwordLogout";
 
         UserData userData = new UserData(username, password, "email@email.com");
-        var authdata = facade.Register(userData);
+        var authdata = facade.register(userData);
         facade.logout(authdata);
     }
 
@@ -93,7 +92,7 @@ public class ServerFacadeTests {
         String password = "passwordListGames";
 
         UserData userData = new UserData(username, password, "email@email.com");
-        var authdata = facade.Register(userData);
+        var authdata = facade.register(userData);
         facade.listGames(authdata);
     }
 
@@ -112,7 +111,7 @@ public class ServerFacadeTests {
         String password = "passwordCreateGame";
 
         UserData userData = new UserData(username, password, "email@email.com");
-        var authdata = facade.Register(userData);
+        var authdata = facade.register(userData);
         facade.createGame( new GameCreate("GameTest"),authdata);
     }
 
@@ -131,7 +130,7 @@ public class ServerFacadeTests {
         String password = "passwordJoinGame";
 
         UserData userData = new UserData(username, password, "email@email.com");
-        var authdata = facade.Register(userData);
+        var authdata = facade.register(userData);
         var gameData = facade.createGame(new GameCreate("TestFakeGame"), authdata);
         facade.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameData.gameID()), authdata);
     }

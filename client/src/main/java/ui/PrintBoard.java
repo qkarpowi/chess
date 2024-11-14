@@ -8,7 +8,7 @@ import chess.ChessPosition;
 import static ui.EscapeSequences.*;
 
 public class PrintBoard {
-    public static String PrintBlackPerspective(ChessBoard board){
+    public static String printBlackPerspective(ChessBoard board){
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append(SET_TEXT_COLOR_BLACK);
@@ -23,7 +23,7 @@ public class PrintBoard {
         output.append(RESET_BG_COLOR);
         return output.toString();
     }
-    public static String PrintWhitePerspective(ChessBoard board){
+    public static String printWhitePerspective(ChessBoard board){
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append(SET_TEXT_COLOR_BLACK);

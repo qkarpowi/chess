@@ -23,6 +23,11 @@ public class GameClient implements ConsoleClient{
         chessGame = initGame();
     }
 
+    @Override
+    public AuthData getAuthData() {
+        return authData;
+    }
+
     private ChessGame initGame(){
         try{
             var games = server.listGames(authData).games();
@@ -35,11 +40,6 @@ public class GameClient implements ConsoleClient{
             throw new RuntimeException(e);
         }
         throw new RuntimeException();
-    }
-
-    @Override
-    public AuthData getAuthData() {
-        return authData;
     }
 
     @Override
@@ -57,8 +57,8 @@ public class GameClient implements ConsoleClient{
                 case "help" -> help();
                 case "exit" -> exit();
                 case "quit" -> "quit";
-                default -> PrintBoard.PrintBlackPerspective(chessGame.getBoard()) +
-                        PrintBoard.PrintWhitePerspective(chessGame.getBoard());
+                default -> PrintBoard.printBlackPerspective(chessGame.getBoard()) +
+                        PrintBoard.printWhitePerspective(chessGame.getBoard());
             };
         } catch (Exception ex) {
             return ex.getMessage();

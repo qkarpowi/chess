@@ -12,22 +12,22 @@ import static ui.EscapeSequences.*;
 
 public class LoginClient implements ConsoleClient {
     private final ServerFacade server;
-    private AuthData authData = null;
-    private int gameID;
+    private AuthData authdata= null;
+    private int gameId;
 
     public LoginClient(ServerFacade facade) {
         server = facade;
-        gameID = 0;
+        gameId= 0;
     }
 
     @Override
     public AuthData getAuthData() {
-        return authData;
+        return authdata;
     }
 
     @Override
     public int getGameID() {
-        return gameID;
+        return gameId;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class LoginClient implements ConsoleClient {
     private String login(String... params) throws ResponseException {
         if (params.length == 2) {
             var loginData = new LoginData(params[0], params[1]);
-            authData = server.login(loginData);
+            authdata= server.login(loginData);
             return String.format("You logged in as %s.", loginData.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -59,7 +59,7 @@ public class LoginClient implements ConsoleClient {
     private String register(String... params) throws ResponseException {
         if (params.length == 3) {
             var userData = new UserData(params[0], params[1], params[2]);
-            authData = server.Register(userData);
+            authdata= server.register(userData);
             return String.format("You logged in as %s.", userData.username());
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");

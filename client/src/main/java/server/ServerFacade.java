@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 
 import model.*;
@@ -16,7 +15,7 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public AuthData Register(UserData user) throws ResponseException {
+    public AuthData register(UserData user) throws ResponseException {
         var path = "/user";
         return this.makeRequest("POST", path, user, AuthData.class, null);
     }
