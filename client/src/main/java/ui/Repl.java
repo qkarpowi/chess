@@ -1,6 +1,7 @@
 package ui;
 
 import clients.ConsoleClient;
+import clients.GameClient;
 import clients.LoginClient;
 import clients.PreGameClient;
 import model.AuthData;
@@ -38,13 +39,17 @@ public class Repl {
                 var msg = e.toString();
                 System.out.print(msg);
             }
-            if(clientState == ClientState.LoggedOut && client.getAuthData() != null) {
+            if(client.getAuthData() != null && client.getGameID() == 0) {
                 clientState = ClientState.LoggedIn;
                 client = new PreGameClient(facade, client.getAuthData());
             }
             if(clientState == ClientState.LoggedIn && client.getAuthData() == null) {
                 clientState = ClientState.LoggedOut;
-                client = new LoginClient(this.facade);
+                client = new LoginClient(facade);
+            }
+            if(clientState == ClientState.LoggedIn && client.getGameID() != 0) {
+                clientState = ClientState.InGame;
+                client = new GameClient(facade, client.getAuthData(), client.getGameID());
             }
         }
         System.out.println();

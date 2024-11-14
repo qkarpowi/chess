@@ -66,8 +66,10 @@ public class PreGameClient implements ConsoleClient{
         if(gameData.isEmpty()) {
             output.append("No games currently");
         } else {
-            for(GameData data : gameData){
-                output.append("ID: ").append(data.gameID())
+            GameData[] gameArray = gameData.toArray(new GameData[0]); // Specify the type to get a Game[] array
+            for (int i = 0; i < gameArray.length; i++) {
+                GameData data = gameArray[i]; // Store the current game item in 'data' for easy access
+                output.append(i + 1).append(" -")
                         .append(" Name: ").append(data.gameName())
                         .append(" White Username: ").append(data.whiteUsername())
                         .append(" Black Username: ").append(data.blackUsername())
@@ -78,12 +80,14 @@ public class PreGameClient implements ConsoleClient{
     }
     private String joinGame(String... params) throws ResponseException {
         if(params.length == 2){
-            int gameIdToJoin = Integer.parseInt(params[1]);
-            if(Objects.equals(params[2].toLowerCase(), "white")){
+            int gameIdToJoin = Integer.parseInt(params[0]) - 1;
+            var gameData = server.listGames().games().toArray(new GameData[0]);
+            gameIdToJoin = gameData[gameIdToJoin].gameID();
+            if(Objects.equals(params[1].toLowerCase(), "white")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameIdToJoin));
                 gameID = gameIdToJoin;
                 return "Game " + gameIdToJoin + " joined successfully";
-            } else if (Objects.equals(params[2].toLowerCase(), "black")){
+            } else if (Objects.equals(params[1].toLowerCase(), "black")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.BLACK, gameIdToJoin));
                 gameID = gameIdToJoin;
                 return "Game " + gameIdToJoin + " joined successfully";

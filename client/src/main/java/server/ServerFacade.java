@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 
 import model.*;
@@ -49,7 +50,7 @@ public class ServerFacade {
 
     public void joinGame(JoinGame game) throws ResponseException {
         var path = "/game";
-        this.makeRequest("POST", path, game, null);
+        this.makeRequest("PUT", path, game, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
