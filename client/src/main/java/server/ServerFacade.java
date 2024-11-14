@@ -42,6 +42,16 @@ public class ServerFacade {
         return this.makeRequest("GET", path, null, GameList.class);
     }
 
+    public void createGame(GameCreate game) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("POST", path, game, null);
+    }
+
+    public void joinGame(JoinGame game) throws ResponseException {
+        var path = "/game";
+        this.makeRequest("POST", path, game, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
