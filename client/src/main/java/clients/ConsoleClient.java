@@ -10,4 +10,6 @@ public interface ConsoleClient {
     String eval(String input);
 
     String help();
+
+    String printGame();
 }

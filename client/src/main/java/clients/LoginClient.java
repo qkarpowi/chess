@@ -13,7 +13,7 @@ import static ui.EscapeSequences.*;
 public class LoginClient implements ConsoleClient {
     private final ServerFacade server;
     private AuthData authdata= null;
-    private int gameId;
+    private final int gameId;
 
     public LoginClient(ServerFacade facade) {
         server = facade;
@@ -50,7 +50,15 @@ public class LoginClient implements ConsoleClient {
     private String login(String... params) throws ResponseException {
         if (params.length == 2) {
             var loginData = new LoginData(params[0], params[1]);
-            authdata= server.login(loginData);
+            try{
+            authdata = server.login(loginData);
+            } catch (ResponseException e) {
+                if(e.getMessage().contains("Unauthorized")) {
+                    throw new ResponseException(400, "Credentials Failed");
+                }
+                throw e;
+            }
+
             return String.format("You logged in as %s.", loginData.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -59,7 +67,14 @@ public class LoginClient implements ConsoleClient {
     private String register(String... params) throws ResponseException {
         if (params.length == 3) {
             var userData = new UserData(params[0], params[1], params[2]);
-            authdata= server.register(userData);
+            try {
+                authdata=server.register(userData);
+            } catch (ResponseException e) {
+                if(e.getMessage().contains("Forbidden")) {
+                    throw new ResponseException(400, "Username Taken");
+                }
+                throw e;
+            }
             return String.format("You logged in as %s.", userData.username());
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
@@ -72,5 +87,10 @@ public class LoginClient implements ConsoleClient {
                     register <username> <password> <email> - to create an account
                     quit - playing chess
                     help - with possible commands""";
+    }
+
+    @Override
+    public String printGame() {
+        return "";
     }
 }

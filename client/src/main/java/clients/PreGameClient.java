@@ -9,6 +9,7 @@ import model.JoinGame;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
@@ -17,11 +18,22 @@ public class PreGameClient implements ConsoleClient{
     private final ServerFacade server;
     private int gameID;
     private AuthData authData;
+    private Collection<GameData> games;
 
     public PreGameClient(ServerFacade facade, AuthData authData) {
         server = facade;
         this.authData = authData;
         gameID = 0;
+        games = initGames();
+    }
+
+    private Collection<GameData> initGames() {
+        try {
+            return server.listGames(authData).games();
+        } catch (ResponseException e) {
+            return null;
+        }
+
     }
 
     @Override
@@ -76,27 +88,54 @@ public class PreGameClient implements ConsoleClient{
                         .append("\n");
             }
         }
+        games = gameData;
         return output.toString();
     }
     private String joinGame(String... params) throws ResponseException {
         if(params.length == 2){
-            int gameIdToJoin = Integer.parseInt(params[0]) - 1;
-            var gameData = server.listGames(authData).games().toArray(new GameData[0]);
-            gameIdToJoin = gameData[gameIdToJoin].gameID();
+            int gameIdToJoin;
+            try {
+                gameIdToJoin = Integer.parseInt(params[0]) - 1;
+            } catch (Exception e){
+                throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
+            }
+            if(gameIdToJoin > games.size() || gameIdToJoin < 1) {
+                throw new ResponseException(400, "No game with " + gameIdToJoin + " exists");
+            }
+            gameIdToJoin = games.toArray(new GameData[0])[gameIdToJoin].gameID();
+            try{
             if(Objects.equals(params[1].toLowerCase(), "white")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
-                return "Game " + gameIdToJoin + " joined successfully";
+                return "Joined successfully\n";
             } else if (Objects.equals(params[1].toLowerCase(), "black")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.BLACK, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
-                return "Game " + gameIdToJoin + " joined successfully";
+                return "Joined successfully\n";
+            }} catch (Exception e) {
+                if(e.getMessage().contains("Forbidden")){
+                    throw new ResponseException(400, "That team is taken");
+                }
             }
         }
         throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
     }
     private String observeGame(String... params) throws ResponseException {
-        return "";
+        if(params.length == 1){
+            int gameIdToJoin;
+            try {
+                gameIdToJoin=Integer.parseInt(params[0]) - 1;
+            } catch (Exception e){
+                throw new ResponseException(400, "Expected: <ID>");
+            }
+            if(gameIdToJoin > games.size() || gameIdToJoin < 1) {
+                throw new ResponseException(400,  "No game with " + gameIdToJoin + " exists");
+            }
+            GameData gameToJoin = games.toArray(new GameData[0])[gameIdToJoin];
+            gameID = gameToJoin.gameID();
+            return "Now observing " + gameToJoin.gameName() + " successfully\n";
+        }
+        throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
     }
     private String logout() throws ResponseException {
         server.logout(authData);
@@ -114,5 +153,10 @@ public class PreGameClient implements ConsoleClient{
                     logout - when you are done
                     quit - playing chess
                     help - with possible commands""";
+    }
+
+    @Override
+    public String printGame() {
+        return "";
     }
 }

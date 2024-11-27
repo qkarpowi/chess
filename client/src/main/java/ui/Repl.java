@@ -4,7 +4,6 @@ import clients.ConsoleClient;
 import clients.GameClient;
 import clients.LoginClient;
 import clients.PreGameClient;
-import model.AuthData;
 import server.ServerFacade;
 
 import java.util.Scanner;
@@ -50,6 +49,7 @@ public class Repl {
             if(clientState == ClientState.LoggedIn && client.getGameID() != 0) {
                 clientState = ClientState.InGame;
                 client = new GameClient(facade, client.getAuthData(), client.getGameID());
+                System.out.print(client.printGame());
             }
         }
         System.out.println();

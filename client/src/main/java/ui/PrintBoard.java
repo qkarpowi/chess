@@ -16,7 +16,7 @@ public class PrintBoard {
         output.append(RESET_BG_COLOR);
 
         //Printing board
-        printBoard(board, output, 0, 0, 1, 1);
+        printBoard(board, output, 0, 7, 1, -1);
 
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append("    h  g  f  e  d  c  b  a \n");
@@ -31,7 +31,7 @@ public class PrintBoard {
         output.append(RESET_BG_COLOR);
 
         //Printing board
-        printBoard(board, output, 7, 7, -1, -1);
+        printBoard(board, output, 7, 0, -1, 1);
 
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append("    a  b  c  d  e  f  g  h \n");

@@ -65,6 +65,11 @@ public class GameClient implements ConsoleClient{
         }
     }
 
+    public String printGame(){
+        return PrintBoard.printBlackPerspective(chessGame.getBoard()) +
+                PrintBoard.printWhitePerspective(chessGame.getBoard());
+    }
+
     private String exit(){
         gameID = 0;
         return "Exiting Game";
