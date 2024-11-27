@@ -107,11 +107,11 @@ public class PreGameClient implements ConsoleClient{
             if(Objects.equals(params[1].toLowerCase(), "white")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.WHITE, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
-                return "Joined successfully\n";
+                return "Joined successfully as White\n";
             } else if (Objects.equals(params[1].toLowerCase(), "black")){
                 server.joinGame(new JoinGame(ChessGame.TeamColor.BLACK, gameIdToJoin), authData);
                 gameID = gameIdToJoin;
-                return "Joined successfully\n";
+                return "Joined successfully as Black\n";
             }} catch (Exception e) {
                 if(e.getMessage().contains("Forbidden")){
                     throw new ResponseException(400, "That team is taken");
