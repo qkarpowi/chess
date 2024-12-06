@@ -5,10 +5,12 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.Collection;
+
 import static ui.EscapeSequences.*;
 
 public class PrintBoard {
-    public static String printBlackPerspective(ChessBoard board){
+    public static String printBlackPerspective(ChessBoard board, Collection<ChessPosition> validMoves){
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append(SET_TEXT_COLOR_BLACK);
@@ -16,14 +18,14 @@ public class PrintBoard {
         output.append(RESET_BG_COLOR);
 
         //Printing board
-        printBoard(board, output, 0, 7, 1, -1);
+        printBoard(board, output, 0, 7, 1, -1, validMoves);
 
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append("    h  g  f  e  d  c  b  a \n");
         output.append(RESET_BG_COLOR);
         return output.toString();
     }
-    public static String printWhitePerspective(ChessBoard board){
+    public static String printWhitePerspective(ChessBoard board, Collection<ChessPosition> validMoves){
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append(SET_TEXT_COLOR_BLACK);
@@ -31,7 +33,7 @@ public class PrintBoard {
         output.append(RESET_BG_COLOR);
 
         //Printing board
-        printBoard(board, output, 7, 0, -1, 1);
+        printBoard(board, output, 7, 0, -1, 1, validMoves);
 
         output.append(SET_BG_COLOR_DARK_GREY);
         output.append("    a  b  c  d  e  f  g  h \n");
@@ -40,7 +42,7 @@ public class PrintBoard {
     }
 
     private static void printBoard(ChessBoard board, StringBuilder output,
-                                   int row, int col, int rowDelta, int colDelta) {
+                                   int row, int col, int rowDelta, int colDelta, Collection<ChessPosition> validMoves) {
         int count = 1;
         for (; row < 8 && row >= 0; row += rowDelta) {
             for (; col < 8 && col >= 0; col += colDelta) {
@@ -52,7 +54,12 @@ public class PrintBoard {
                 }
 
                 // Set background color based on count
-                output.append(count % 2 == 1 ? SET_BG_COLOR_WHITE : SET_BG_COLOR_LIGHT_GREY);
+
+                if(validMoves != null && validMoves.contains(new ChessPosition(row, col))) {
+                    output.append(SET_BG_COLOR_DARK_GREEN);
+                } else {
+                    output.append(count % 2 == 1 ? SET_BG_COLOR_WHITE : SET_BG_COLOR_LIGHT_GREY);
+                }
                 count++;
 
                 // Piece logic: Get piece and append the correct symbol or empty space

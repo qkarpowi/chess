@@ -57,8 +57,8 @@ public class GameClient implements ConsoleClient{
                 case "help" -> help();
                 case "exit" -> exit();
                 case "quit" -> "quit";
-                default -> PrintBoard.printBlackPerspective(chessGame.getBoard()) +
-                        PrintBoard.printWhitePerspective(chessGame.getBoard());
+                default -> PrintBoard.printBlackPerspective(chessGame.getBoard(), null) +
+                        PrintBoard.printWhitePerspective(chessGame.getBoard(), null);
             };
         } catch (Exception ex) {
             return ex.getMessage();
@@ -66,8 +66,8 @@ public class GameClient implements ConsoleClient{
     }
 
     public String printGame(){
-        return PrintBoard.printBlackPerspective(chessGame.getBoard()) +
-                PrintBoard.printWhitePerspective(chessGame.getBoard());
+        return PrintBoard.printBlackPerspective(chessGame.getBoard(), null) +
+                PrintBoard.printWhitePerspective(chessGame.getBoard(), null);
     }
 
     private String exit(){
