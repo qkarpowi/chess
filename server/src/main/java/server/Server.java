@@ -3,6 +3,7 @@ package server;
 import com.google.gson.JsonObject;
 import dataaccess.*;
 import model.*;
+import org.eclipse.jetty.websocket.api.Session;
 import service.DatabaseService;
 import service.GameService;
 import service.UserService;
@@ -11,7 +12,10 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import util.Result;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Server {
+    static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
     private final UserService userService;
     private final DatabaseService databaseService;
     private final GameService gameService;
@@ -39,6 +43,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", WebsocketHandler.class);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearApplication);
