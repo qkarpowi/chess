@@ -16,9 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
     static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
-    private final UserService userService;
+    static UserService userService=null;
     private final DatabaseService databaseService;
-    private final GameService gameService;
+    static GameService gameService=null;
 
     public Server() {
 

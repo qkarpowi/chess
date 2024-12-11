@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.*;
 import util.Result;
@@ -124,5 +125,9 @@ public class GameService {
         } catch (Exception e) {
             return new Result<>(false, 500, e.getMessage(), null);
         }
+    }
+
+    public GameData getGame(Integer gameId) throws DataAccessException {
+        return gameDAO.getGame(gameId);
     }
 }

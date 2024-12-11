@@ -105,4 +105,8 @@ public class UserService {
 
         return new Result<>(true, 200, "success", null);
     }
+
+    public AuthData getAuthData(String authtoken) throws DataAccessException {
+        return authDAO.getAuth(authtoken);
+    }
 }
