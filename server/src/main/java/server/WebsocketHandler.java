@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.JoinGame;
+import websocket.commands.Leave;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerError;
@@ -90,13 +91,10 @@ public class WebsocketHandler {
             if (authData == null) {
                 throw new Exception("Auth token not found");
             }
-
             if (game == null) {
                 throw new Exception("Game not found");
             }
-
             Notification notification;
-
             //get color
             ChessGame.TeamColor color = command.getColor();
             if(color != null){
@@ -114,18 +112,28 @@ public class WebsocketHandler {
                 notification = new Notification("%s has joined the game as an observer".formatted(authData.username()));
 
             }
-
             //send notification
             broadcastMessage(session, notification);
-
             //update session map
             LoadGame load = new LoadGame(game.game());
             sendMessage(session, load);
-
         } catch (Exception e){
             sendError(session, new ServerError(e.getMessage()));
         }
-
     }
+
+    private void handleLeave(Session session, Leave command) throws IOException {
+        try {
+            AuthData auth = Server.userService.getAuthData(command.getAuthToken());
+
+            Notification notification = new Notification("%s has left the game".formatted(auth.username()));
+            broadcastMessage(session, notification);
+
+            session.close();
+        } catch (Exception e) {
+            sendError(session, new ServerError("Not authorized"));
+        }
+    }
+
 
 }
