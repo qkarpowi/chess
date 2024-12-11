@@ -63,6 +63,9 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<ChessMove>();
         ChessPiece pieceToMove = this.board.getPiece(startPosition);
+        if(pieceToMove == null) {
+            return validMoves;
+        }
         for (ChessMove move : possibleMoves) {
 
             try {

@@ -64,7 +64,7 @@ public class Repl {
                 System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + client.getAuthData().username() + ">>> " + SET_TEXT_COLOR_GREEN);
                 break;
             case InGame:
-                System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + client.getAuthData().username() + " Chess>>> " + SET_TEXT_COLOR_GREEN);
+                System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "Chess>>> " + SET_TEXT_COLOR_GREEN);
         }
 
     }

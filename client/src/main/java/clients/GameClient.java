@@ -1,9 +1,6 @@
 package clients;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -38,7 +35,7 @@ public class GameClient implements ConsoleClient{
             teamColor = ChessGame.TeamColor.BLACK;
             isPlayer = true;
         }
-        server.joinGameWS(authData.authToken(), gameID, teamColor);
+        server.joinGameWS(authData.authToken(), gameID, teamColor, chessGame);
     }
 
     @Override
@@ -86,6 +83,7 @@ public class GameClient implements ConsoleClient{
                     case "help" -> help();
                     case "leave" -> leave();
                     case "redraw" -> printGame();
+                    case "highlight" -> highlight(params);
                     default -> help();
                 };
             }
@@ -113,7 +111,15 @@ public class GameClient implements ConsoleClient{
                     return "Please provide proper promotion piece name (ex: 'knight')";
                 }
             }
-            server.makeMove(gameID, new ChessMove(from, to, promotion), authData.authToken());
+
+            try{
+                chessGame.game().makeMove(new ChessMove(from, to, promotion));
+                server.makeMove(gameID, new ChessMove(from, to, promotion), authData.authToken());
+
+            } catch(InvalidMoveException e){
+                System.out.println(e.getMessage());
+            }
+
             return printGame();
         }
         else {
@@ -166,12 +172,21 @@ public class GameClient implements ConsoleClient{
 
     @Override
     public String help() {
-        return SET_TEXT_COLOR_BLUE + """
+        if (isPlayer){
+            return SET_TEXT_COLOR_BLUE + """
                     help - with possible commands
                     redraw - the chess board
                     leave - the chess game
                     move <start> <end> <promotion> - a chess piece
                     resign - give up the game
                     highlight <position> - legal moves for a piece""";
+        } else{
+            return SET_TEXT_COLOR_BLUE + """
+                    help - with possible commands
+                    redraw - the chess board
+                    leave - the chess game
+                    highlight <position> - legal moves for a piece""";
+        }
+
     }
 }

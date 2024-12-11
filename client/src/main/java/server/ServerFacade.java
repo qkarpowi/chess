@@ -104,17 +104,17 @@ public class ServerFacade {
         return response;
     }
 
-    public void connectWS(ChessGame.TeamColor color) {
+    public void connectWS(ChessGame.TeamColor color, GameData game) {
         try {
-            ws = new WebsocketCommunicator(serverUrl, color);
+            ws = new WebsocketCommunicator(serverUrl, color, game.game());
         }
         catch (Exception e) {
             System.out.println("Failed to make connection with server");
         }
     }
 
-    public void joinGameWS(String authToken, int gameID, ChessGame.TeamColor color) {
-        connectWS(color);
+    public void joinGameWS(String authToken, int gameID, ChessGame.TeamColor color, GameData game) {
+        connectWS(color, game);
         sendCommand(new websocket.commands.JoinGame(authToken, gameID, color));
     }
 

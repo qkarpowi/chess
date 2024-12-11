@@ -12,16 +12,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static ui.EscapeSequences.ERASE_LINE;
-import static ui.EscapeSequences.SET_TEXT_COLOR_MAGENTA;
+import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.SET_TEXT_COLOR_GREEN;
 
 public class WebsocketCommunicator extends Endpoint {
 
     Session session;
     private ChessGame.TeamColor teamColor;
+    private ChessGame game;
 
-    public WebsocketCommunicator(String serverDomain, ChessGame.TeamColor teamColor) {
+    public WebsocketCommunicator(String serverDomain, ChessGame.TeamColor teamColor, ChessGame game) {
         this.teamColor = teamColor;
+        this.game = game;
         try {
             URI uri = new URI("ws://" + serverDomain + "/ws");
 
@@ -57,19 +59,22 @@ public class WebsocketCommunicator extends Endpoint {
         else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGame loadGame = new Gson().fromJson(message, LoadGame.class);
             printLoadedGame(loadGame.getGame());
+            game = loadGame.getGame();
         }
     }
 
     private void printNotification(String message) {
         System.out.printf("\n" + SET_TEXT_COLOR_MAGENTA + message + "\n");
+        System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "Chess>>> " + SET_TEXT_COLOR_GREEN);
     }
 
     private void printLoadedGame(ChessGame game) {
         if(this.teamColor == ChessGame.TeamColor.BLACK) {
-            System.out.println(PrintBoard.printBlackPerspective(game.getBoard(), null));
+            System.out.println("\n" + PrintBoard.printBlackPerspective(game.getBoard(), null));
         } else {
-            System.out.println(PrintBoard.printWhitePerspective(game.getBoard(), null));
+            System.out.println("\n" + PrintBoard.printWhitePerspective(game.getBoard(), null));
         }
+        System.out.print(SET_TEXT_COLOR_LIGHT_GREY + "\n" + "Chess>>> " + SET_TEXT_COLOR_GREEN);
     }
 
     public void sendMessage(String message) {
