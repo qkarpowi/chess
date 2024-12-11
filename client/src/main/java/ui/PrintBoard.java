@@ -55,7 +55,7 @@ public class PrintBoard {
 
                 // Set background color based on count
 
-                if(validMoves != null && validMoves.contains(new ChessPosition(row, col))) {
+                if(validMoves != null && validMoves.contains(new ChessPosition(row + 1, col + 1))) {
                     output.append(SET_BG_COLOR_DARK_GREEN);
                 } else {
                     output.append(count % 2 == 1 ? SET_BG_COLOR_WHITE : SET_BG_COLOR_LIGHT_GREY);

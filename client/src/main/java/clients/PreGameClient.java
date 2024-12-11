@@ -99,7 +99,7 @@ public class PreGameClient implements ConsoleClient{
             } catch (Exception e){
                 throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
             }
-            if(gameIdToJoin > games.size() || gameIdToJoin < 1) {
+            if(gameIdToJoin > games.size() || gameIdToJoin < 0) {
                 throw new ResponseException(400, "No game with " + gameIdToJoin + " exists");
             }
             gameIdToJoin = games.toArray(new GameData[0])[gameIdToJoin].gameID();
