@@ -12,10 +12,19 @@ import java.util.HashSet;
 public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard board;
+    private boolean isGameOver = false;
     public ChessGame() {
         this.board = new ChessBoard();
         this.board.resetBoard();
         this.teamTurn= TeamColor.WHITE;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver=gameOver;
+    }
+
+    public boolean isGameOver() {
+        return isGameOver;
     }
 
     /**

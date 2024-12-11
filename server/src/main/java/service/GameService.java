@@ -127,6 +127,11 @@ public class GameService {
         }
     }
 
+    public void updateGame(String authtoken, GameData gameData) throws DataAccessException {
+        authDAO.getAuth(authtoken);
+        gameDAO.updateGame(gameData);
+    }
+
     public GameData getGame(Integer gameId) throws DataAccessException {
         return gameDAO.getGame(gameId);
     }

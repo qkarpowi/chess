@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.JoinGame;
 import websocket.commands.Leave;
+import websocket.commands.Resign;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerError;
@@ -135,5 +136,42 @@ public class WebsocketHandler {
         }
     }
 
+    private void handleResign(Session session, Resign command) throws IOException {
+        try {
+            AuthData auth = Server.userService.getAuthData(command.getAuthToken());
+            GameData game = Server.gameService.getGame(command.getGameID());
+            ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
+
+            String opponentUsername = userColor == ChessGame.TeamColor.WHITE ? game.blackUsername() : game.whiteUsername();
+
+            if (userColor == null) {
+                sendError(session, new ServerError("You are observing this game"));
+                return;
+            }
+
+            if (game.game().isGameOver()) {
+                sendError(session, new ServerError("Game is already over!"));
+                return;
+            }
+
+            game.game().setGameOver(true);
+            Server.gameService.updateGame(auth.authToken(), game);
+            Notification notification = new Notification("%s has forfeited, %s wins!".formatted(auth.username(), opponentUsername));
+            broadcastMessage(session, notification, true);
+
+        } catch (Exception e) {
+            sendError(session, new ServerError(e.getMessage()));
+        }
+    }
+
+    private ChessGame.TeamColor getTeamColor(String username, GameData game) {
+        if (username.equals(game.whiteUsername())) {
+            return ChessGame.TeamColor.WHITE;
+        }
+        else if (username.equals(game.blackUsername())) {
+            return ChessGame.TeamColor.BLACK;
+        }
+        else return null;
+    }
 
 }
