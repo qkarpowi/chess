@@ -10,6 +10,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.JoinGame;
+import websocket.messages.LoadGame;
+import websocket.messages.Notification;
+import websocket.messages.ServerError;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -67,7 +70,7 @@ public class WebsocketHandler {
     public void sendMessage(Session session, ServerMessage message) throws IOException {
         session.getRemote().sendString(new Gson().toJson(message));
     }
-    private void sendError(Session session, Error error) {
+    private void sendError(Session session, ServerError error) {
         try{
             System.out.printf("Error: %s%n", new Gson().toJson(error));
             session.getRemote().sendString(new Gson().toJson(error));
@@ -88,6 +91,12 @@ public class WebsocketHandler {
                 throw new Exception("Auth token not found");
             }
 
+            if (game == null) {
+                throw new Exception("Game not found");
+            }
+
+            Notification notification;
+
             //get color
             ChessGame.TeamColor color = command.getColor();
             if(color != null){
@@ -100,17 +109,21 @@ public class WebsocketHandler {
                     throw new Exception("Invalid color");
                 }
 
-                //Notification notif = new Notification("%s has joined the game as %s".formatted(auth.username(), command.getColor().toString()));
+                notification = new Notification("%s has joined the game as %s".formatted(authData.username(), command.getColor().toString()));
+            }else{
+                notification = new Notification("%s has joined the game as an observer".formatted(authData.username()));
+
             }
 
             //send notification
-
+            broadcastMessage(session, notification);
 
             //update session map
-
+            LoadGame load = new LoadGame(game.game());
+            sendMessage(session, load);
 
         } catch (Exception e){
-            sendError(session, new Error(e.getMessage()));
+            sendError(session, new ServerError(e.getMessage()));
         }
 
     }
