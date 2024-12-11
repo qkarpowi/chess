@@ -11,6 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.JoinGame;
 import websocket.commands.Leave;
+import websocket.commands.MakeMove;
 import websocket.commands.Resign;
 import websocket.messages.LoadGame;
 import websocket.messages.Notification;
@@ -47,8 +48,16 @@ public class WebsocketHandler {
             JoinGame command = new Gson().fromJson(message, JoinGame.class);
             Server.gameSessions.replace(session, command.getGameID());
             handleJoinGame(session, command);
+        }else if(message.contains("MAKE_MOVE")) {
+            MakeMove command = new Gson().fromJson(message, MakeMove.class);
+            handleMakeMove(session, command);
+        }else if(message.contains("LEAVE")) {
+            Leave command = new Gson().fromJson(message, Leave.class);
+            handleLeave(session, command);
+        }else if(message.contains("RESIGN")) {
+            Resign command = new Gson().fromJson(message, Resign.class);
+            handleResign(session, command);
         }
-
     }
 
     // Send the notification to all clients on the current game except the currSession
@@ -123,7 +132,7 @@ public class WebsocketHandler {
         }
     }
 
-    private void handleLeave(Session session, Leave command) throws IOException {
+    private void handleLeave(Session session, Leave command) {
         try {
             AuthData auth = Server.userService.getAuthData(command.getAuthToken());
 
@@ -136,7 +145,7 @@ public class WebsocketHandler {
         }
     }
 
-    private void handleResign(Session session, Resign command) throws IOException {
+    private void handleResign(Session session, Resign command) {
         try {
             AuthData auth = Server.userService.getAuthData(command.getAuthToken());
             GameData game = Server.gameService.getGame(command.getGameID());
@@ -172,6 +181,58 @@ public class WebsocketHandler {
             return ChessGame.TeamColor.BLACK;
         }
         else return null;
+    }
+
+
+    private void handleMakeMove(Session session, MakeMove command) {
+        try {
+            AuthData auth = Server.userService.getAuthData(command.getAuthToken());
+            GameData game = Server.gameService.getGame(command.getGameID());
+            ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
+            if (userColor == null) {
+                sendError(session, new ServerError("You are observing this game"));
+                return;
+            }
+
+            if (game.game().isGameOver()) {
+                sendError(session, new ServerError("Game is over"));
+                return;
+            }
+
+            if (game.game().getTeamTurn().equals(userColor)) {
+                game.game().makeMove(command.getMove());
+
+                Notification notification;
+                ChessGame.TeamColor opponentColor = userColor == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+                if (game.game().isInCheckmate(opponentColor)) {
+                    notification = new Notification("Checkmate! %s wins!".formatted(auth.username()));
+                    game.game().setGameOver(true);
+                }
+                else if (game.game().isInStalemate(opponentColor)) {
+                    notification = new Notification("Stalemate caused by %s's move! It's a tie!".formatted(auth.username()));
+                    game.game().setGameOver(true);
+                }
+                else if (game.game().isInCheck(opponentColor)) {
+                    notification = new Notification("A move has been made by %s, %s is now in check!".formatted(auth.username(), opponentColor.toString()));
+                }
+                else {
+                    notification = new Notification("A move has been made by %s".formatted(auth.username()));
+                }
+                broadcastMessage(session, notification);
+
+                Server.gameService.updateGame(auth.authToken(), game);
+
+                LoadGame load = new LoadGame(game.game());
+                broadcastMessage(session, load, true);
+            }
+            else {
+                sendError(session, new ServerError("Is not your turn"));
+            }
+        }
+        catch (Exception e) {
+            sendError(session, new ServerError(e.getMessage()));
+        }
     }
 
 }
