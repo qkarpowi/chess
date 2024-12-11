@@ -1,18 +1,27 @@
 package server;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
 import model.*;
+import websocket.commands.Leave;
+import websocket.commands.MakeMove;
+import websocket.commands.Resign;
+import websocket.commands.UserGameCommand;
 
 import java.io.*;
 import java.net.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    private final String httpUrl;
+    private WebsocketCommunicator ws;
 
     public ServerFacade(String url) {
         serverUrl = url;
+        httpUrl = "http://" + url;
     }
 
     public AuthData register(UserData user) throws ResponseException {
@@ -47,7 +56,7 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authtoken) throws ResponseException {
         try {
-            URL url = (new URI(serverUrl + path)).toURL();
+            URL url = (new URI(httpUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
@@ -93,6 +102,37 @@ public class ServerFacade {
             }
         }
         return response;
+    }
+
+    public void connectWS(ChessGame.TeamColor color) {
+        try {
+            ws = new WebsocketCommunicator(serverUrl, color);
+        }
+        catch (Exception e) {
+            System.out.println("Failed to make connection with server");
+        }
+    }
+
+    public void joinGameWS(String authToken, int gameID, ChessGame.TeamColor color) {
+        connectWS(color);
+        sendCommand(new websocket.commands.JoinGame(authToken, gameID, color));
+    }
+
+    public void makeMove(int gameID, ChessMove move, String authToken) {
+        sendCommand(new MakeMove(authToken, gameID, move));
+    }
+
+    public void leave(String authToken, int gameID) {
+        sendCommand(new Leave(authToken, gameID));
+    }
+
+    public void resign(String authToken, int gameID) {
+        sendCommand(new Resign(authToken, gameID));
+    }
+
+    public void sendCommand(UserGameCommand command) {
+        String message = new Gson().toJson(command);
+        ws.sendMessage(message);
     }
 
     private boolean isSuccessful(int status) {

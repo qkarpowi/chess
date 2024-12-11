@@ -2,9 +2,9 @@ package clients;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
-import jdk.jshell.spi.ExecutionControl;
 import model.AuthData;
 import model.GameData;
 import server.ServerFacade;
@@ -30,6 +30,7 @@ public class GameClient implements ConsoleClient{
         this.authData = authData;
         this.gameID = gameID;
         chessGame = initGame();
+
         if(Objects.equals(authData.username(), chessGame.whiteUsername()) ){
             teamColor = ChessGame.TeamColor.WHITE;
             isPlayer = true;
@@ -37,6 +38,7 @@ public class GameClient implements ConsoleClient{
             teamColor = ChessGame.TeamColor.BLACK;
             isPlayer = true;
         }
+        server.joinGameWS(authData.authToken(), gameID, teamColor);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class GameClient implements ConsoleClient{
                     case "leave" -> leave();
                     case "move" -> makemove(params);
                     case "resign" -> resign();
-                    case "highlight" -> higlight(params);
+                    case "highlight" -> highlight(params);
                     case "redraw" -> printGame();
                     default -> help();
                 };
@@ -94,11 +96,40 @@ public class GameClient implements ConsoleClient{
     }
 
     private String resign() {
-        return "butt";
+        server.resign(authData.authToken(), gameID);
+        gameID = 0;
+        return "Resigning Game";
     }
 
     private String makemove(String[] params) {
-        return "butt";
+        if (params.length >= 2 && params[0].matches("[a-h][1-8]") && params[1].matches("[a-h][1-8]")) {
+            ChessPosition from = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
+            ChessPosition to = new ChessPosition(params[1].charAt(1) - '0',params[1].charAt(0) - ('a'-1));
+
+            ChessPiece.PieceType promotion = null;
+            if (params.length == 3) {
+                promotion = getPieceType(params[2]);
+                if (promotion == null) { // If it was improperly typed by the user
+                    return "Please provide proper promotion piece name (ex: 'knight')";
+                }
+            }
+            server.makeMove(gameID, new ChessMove(from, to, promotion), authData.authToken());
+            return printGame();
+        }
+        else {
+            return "Please provide a to and from coordinate (ex: 'c3 d5')";
+        }
+    }
+
+    public ChessPiece.PieceType getPieceType(String name) {
+        return switch (name.toUpperCase()) {
+            case "QUEEN" -> ChessPiece.PieceType.QUEEN;
+            case "BISHOP" -> ChessPiece.PieceType.BISHOP;
+            case "KNIGHT" -> ChessPiece.PieceType.KNIGHT;
+            case "ROOK" -> ChessPiece.PieceType.ROOK;
+            case "PAWN" -> ChessPiece.PieceType.PAWN;
+            default -> null;
+        };
     }
 
     public String printGame(){
@@ -109,7 +140,7 @@ public class GameClient implements ConsoleClient{
         }
     }
 
-    private String higlight(String[] params){
+    private String highlight(String[] params){
         if (params.length == 1 && params[0].matches("[a-h][1-8]")) {
             ChessPosition position = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
             if(teamColor == ChessGame.TeamColor.BLACK){
@@ -126,6 +157,7 @@ public class GameClient implements ConsoleClient{
     }
 
     private String leave(){
+        server.leave(authData.authToken(), gameID);
         gameID = 0;
         return "leaving Game";
     }
@@ -136,7 +168,7 @@ public class GameClient implements ConsoleClient{
                     help - with possible commands
                     redraw - the chess board
                     leave - the chess game
-                    move <start> <end> - a chess piece
+                    move <start> <end> <promotion> - a chess piece
                     resign - give up the game
                     highlight <position> - legal moves for a piece""";
     }
