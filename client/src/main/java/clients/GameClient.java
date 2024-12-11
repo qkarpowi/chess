@@ -144,10 +144,12 @@ public class GameClient implements ConsoleClient{
         if (params.length == 1 && params[0].matches("[a-h][1-8]")) {
             ChessPosition position = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
             if(teamColor == ChessGame.TeamColor.BLACK){
-                Collection<ChessPosition> positions = chessGame.game().validMoves(position).stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
+                Collection<ChessPosition> positions = chessGame.game()
+                        .validMoves(position).stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
                 return PrintBoard.printBlackPerspective(chessGame.game().getBoard(), positions);
             } else {
-                Collection<ChessPosition> positions = chessGame.game().validMoves(position).stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
+                Collection<ChessPosition> positions = chessGame.game()
+                        .validMoves(position).stream().map(ChessMove::getEndPosition).collect(Collectors.toSet());
                 return PrintBoard.printWhitePerspective(chessGame.game().getBoard(), positions);
             }
         }

@@ -180,7 +180,9 @@ public class WebsocketHandler {
         else if (username.equals(game.blackUsername())) {
             return ChessGame.TeamColor.BLACK;
         }
-        else return null;
+        else {
+            return null;
+        }
     }
 
 
@@ -214,7 +216,8 @@ public class WebsocketHandler {
                     game.game().setGameOver(true);
                 }
                 else if (game.game().isInCheck(opponentColor)) {
-                    notification = new Notification("A move has been made by %s, %s is now in check!".formatted(auth.username(), opponentColor.toString()));
+                    notification = new Notification("A move has been made by %s, %s is now in check!"
+                            .formatted(auth.username(), opponentColor.toString()));
                 }
                 else {
                     notification = new Notification("A move has been made by %s".formatted(auth.username()));
