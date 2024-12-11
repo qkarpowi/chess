@@ -136,6 +136,8 @@ public class WebsocketHandler {
         try {
             AuthData auth = Server.userService.getAuthData(command.getAuthToken());
 
+            session.close();
+
             Notification notification = new Notification("%s has left the game".formatted(auth.username()));
             broadcastMessage(session, notification);
             GameData game = Server.gameService.getGame(command.getGameID());
@@ -145,7 +147,7 @@ public class WebsocketHandler {
                 game = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
             }
             Server.gameService.updateGame(command.getAuthToken(), game);
-            session.close();
+
         } catch (Exception e) {
             sendError(session, new ServerError("Not authorized"));
         }
